@@ -1,179 +1,143 @@
 /**
  * notion-enhancer
- * (c) 2023 dragonwocky <thedragonring.bod@gmail.com> (https://dragonwocky.me/)
+ * (c) 2024 dragonwocky <thedragonring.bod@gmail.com> (https://dragonwocky.me/)
  * (https://notion-enhancer.github.io/) under the MIT license
  */
 
-import asar from "@electron/asar";
 import os from "node:os";
 import fsp from "node:fs/promises";
+import { resolve } from "node:path";
 import { existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { join, resolve } from "node:path";
 import { execSync } from "node:child_process";
 import { createRequire } from "node:module";
-
+import { fileURLToPath } from "node:url";
+import asar from "@electron/asar";
 import patch from "./patch-desktop-app.mjs";
 
-let __notionResources;
 const nodeRequire = createRequire(import.meta.url),
-  manifest = nodeRequire("../package.json"),
   platform =
     process.platform === "linux" &&
     os.release().toLowerCase().includes("microsoft")
       ? "wsl"
       : process.platform,
-  polyfillWslEnv = (name) => {
+  getEnv = (name) => {
     if (platform !== "wsl" || process.env[name]) return process.env[name];
-    // adds a windows environment variable to process.env
-    // in a wsl environment, inc. path conversion
-    const value = execSync(`cmd.exe /c echo %${name}%`, {
-        encoding: "utf8",
-        stdio: "pipe",
-      }).trim(),
+    // read windows environment variables and convert
+    // windows paths to paths mounted in the wsl fs
+    const pipe = { encoding: "utf8", stdio: "pipe" },
+      value = execSync(`cmd.exe /c echo %${name}%`, pipe).trim(),
       isAbsolutePath = /^[a-zA-Z]:[\\\/]/.test(value),
-      onSystemDrive = /^[\\\/]/.test(value);
+      isSystemPath = /^[\\\/]/.test(value);
     if (isAbsolutePath) {
       // e.g. C:\Program Files
       const drive = value[0].toLowerCase(),
         path = value.slice(2).replace(/\\/g, "/");
       process.env[name] = `/mnt/${drive}${path}`;
-    } else if (onSystemDrive) {
+    } else if (isSystemPath) {
       // e.g. \Program Files
-      const drive = polyfillWslEnv("SYSTEMDRIVE")[0].toLowerCase(),
+      const drive = getEnv("SYSTEMDRIVE")[0].toLowerCase(),
         path = value.replace(/\\/g, "/");
       process.env[name] = `/mnt/${drive}${path}`;
     } else process.env[name] = value;
     return process.env[name];
-  },
-  readdirDeep = async (dir) => {
-    dir = resolve(dir);
-    let files = [];
-    for (let file of await fsp.readdir(dir)) {
-      if (["node_modules", ".git"].includes(file)) continue;
-      file = join(dir, file);
-      const stat = await fsp.lstat(file);
-      if (stat.isDirectory()) {
-        files = files.concat(await readdirDeep(file));
-      } else if (stat.isSymbolicLink()) {
-      } else files.push(file);
-    }
-    return files;
   };
 
+let __notionResources;
 const setNotionPath = (path) => {
     // sets notion resource path to user provided value
     // e.g. with the --path cli option
     __notionResources = path;
   },
-  getResourcePath = (path) => {
-    if (__notionResources) return resolve(`${__notionResources}/${path}`);
-    polyfillWslEnv("LOCALAPPDATA");
-    polyfillWslEnv("PROGRAMW6432");
-    const potentialPaths = {
-      win32: [
-        resolve(`${process.env.LOCALAPPDATA}/Programs/Notion/resources`),
-        resolve(`${process.env.PROGRAMW6432}/Notion/resources`),
-      ],
-      darwin: [
-        `/Users/${process.env.USER}/Applications/Notion.app/Contents/Resources`,
-        "/Applications/Notion.app/Contents/Resources",
-      ],
-      linux: ["/opt/notion-app"],
-    };
-    potentialPaths["wsl"] = potentialPaths["win32"];
-    for (const testPath of potentialPaths[platform]) {
-      if (!existsSync(testPath)) continue;
-      __notionResources = testPath;
-      return resolve(`${__notionResources}/${path}`);
+  getResourcePath = (...paths) => {
+    if (__notionResources) return resolve(__notionResources, ...paths);
+    // prettier-ignore
+    for (const [platforms, notionResources] of [
+      [['win32', 'wsl'], resolve(`${getEnv("LOCALAPPDATA")}/Programs/Notion/resources`)],
+      [['win32', 'wsl'], resolve(`${getEnv("PROGRAMW6432")}/Notion/resources`)],
+      [['darwin'], `/Users/${getEnv("USER")}/Applications/Notion.app/Contents/Resources`],
+      [['darwin'], "/Applications/Notion.app/Contents/Resources"],
+      [['linux'], "/opt/notion-app"],
+    ]) {
+      if (!platforms.includes(platform)) continue;
+      if (!existsSync(notionResources)) continue;
+      __notionResources = notionResources;
+      return resolve(__notionResources, ...paths);
     }
   },
-  // prefer unpacked if both exist
-  getAppPath = () => ["app", "app.asar"].map(getResourcePath).find(existsSync),
-  getBackupPath = () =>
-    ["app.bak", "app.asar.bak"].map(getResourcePath).find(existsSync),
-  checkEnhancementVersion = () => {
-    // prettier-ignore
-    const manifestPath = getResourcePath("app/node_modules/notion-enhancer/package.json");
-    if (!existsSync(manifestPath)) return undefined;
-    const insertVersion = nodeRequire(manifestPath).version;
-    return insertVersion;
+  extractFile = (path) => {
+    const archive = getResourcePath("app.asar");
+    return asar.extractFile(archive, path);
   };
 
-const unpackApp = async () => {
-    const appPath = getAppPath();
-    if (!appPath || !appPath.endsWith("asar")) return false;
-    // asar reads synchronously
-    asar.extractAll(appPath, appPath.replace(/\.asar$/, ""));
-    await fsp.rm(appPath);
-    return true;
+const getInsertPath = (...paths) => {
+    return "node_modules/notion-enhancer/" + paths.join("/");
   },
-  applyEnhancements = async () => {
-    const appPath = getAppPath();
-    if (!appPath || appPath.endsWith("asar")) return false;
-    const srcPath = fileURLToPath(new URL("../src", import.meta.url)),
-      insertPath = getResourcePath("app/node_modules/notion-enhancer");
-    if (existsSync(insertPath)) await fsp.rm(insertPath, { recursive: true });
-    // insert the notion-enhancer/src folder into notion's node_modules folder
-    await fsp.cp(srcPath, insertPath, { recursive: true });
-    // call patch-desktop-app.mjs on each file
-    // prettier-ignore
-    const notionScripts = (await readdirDeep(appPath))
-      .filter((file) => file.endsWith(".js")),
-      scriptUpdates = [];
-    for (const file of notionScripts) {
-      const scriptId = file.slice(appPath.length + 1, -3).replace(/\\/g, "/"),
-        scriptContent = await fsp.readFile(file, { encoding: "utf8" }),
-        patchedContent = patch(scriptId, scriptContent),
-        changesMade = patchedContent !== scriptContent;
-      if (changesMade) scriptUpdates.push(fsp.writeFile(file, patchedContent));
+  getInsertVersion = () => {
+    try {
+      const manifest = extractFile(getInsertPath("package.json")).toString();
+      return JSON.parse(manifest).version;
+    } catch {
+      return null;
     }
-    // create package.json
-    // prettier-ignore
-    const manifestPath = getResourcePath("app/node_modules/notion-enhancer/package.json"),
-      jsManifest = { ...manifest, main: "init.js" };
-    // remove cli-specific fields
-    delete jsManifest.bin;
-    delete jsManifest.type;
-    delete jsManifest.scripts;
-    delete jsManifest.engines;
-    delete jsManifest.packageManager;
-    delete jsManifest.dependencies;
-    const jsonManifest = JSON.stringify(jsManifest);
-    scriptUpdates.push(fsp.writeFile(manifestPath, jsonManifest));
-    await Promise.all(scriptUpdates);
+  };
+
+const backupApp = async () => {
+    const archive = getResourcePath("app.asar");
+    if (!existsSync(archive)) return false;
+    await fsp.cp(archive, archive + ".bak");
     return true;
   },
-  takeBackup = async () => {
-    const appPath = getAppPath();
-    if (!appPath) return false;
-    const backupPath = getBackupPath();
-    if (backupPath) await fsp.rm(backupPath, { recursive: true });
-    const destPath = `${appPath}.bak`;
-    if (!appPath.endsWith(".asar")) {
-      await fsp.cp(appPath, destPath, { recursive: true });
-    } else await fsp.rename(appPath, destPath);
+  restoreApp = async () => {
+    const archive = getResourcePath("app.asar");
+    if (!existsSync(archive + ".bak")) return false;
+    await fsp.rename(archive + ".bak", archive);
     return true;
   },
-  restoreBackup = async () => {
-    const backupPath = getBackupPath();
-    if (!backupPath) return false;
-    const destPath = backupPath.replace(/\.bak$/, "");
-    if (existsSync(destPath)) await fsp.rm(destPath, { recursive: true });
-    await fsp.rename(backupPath, destPath);
-    const appPath = getAppPath();
-    if (destPath !== appPath) await fsp.rm(appPath, { recursive: true });
+  enhanceApp = async (debug = false) => {
+    const app = getResourcePath("app"),
+      archive = getResourcePath("app.asar");
+    if (!existsSync(archive)) return false;
+    if (existsSync(app)) await fsp.rm(app, { recursive: true, force: true });
+    await fsp.mkdir(app);
+    // extract archive to folder and apply patches
+    for (let file of asar.listPackage(archive)) {
+      file = file.replace(/^\//g, "");
+      const stat = asar.statFile(archive, file),
+        isFolder = !!stat.files,
+        isSymlink = !!stat.link,
+        isExecutable = stat.executable,
+        appPath = resolve(app, file);
+      if (isFolder) {
+        await fsp.mkdir(appPath);
+      } else if (isSymlink) {
+        await fsp.symlink(appPath, resolve(app, link));
+      } else {
+        await fsp.writeFile(appPath, patch(file, extractFile(file)));
+        if (isExecutable) await fsp.chmod(appPath, "755");
+      }
+    }
+    // insert the notion-enhancer/src folder into notion's node_modules
+    const insertSrc = fileURLToPath(new URL("../src", import.meta.url)),
+      insertDest = resolve(app, getInsertPath());
+    await fsp.cp(insertSrc, insertDest, { recursive: true });
+    // create package.json with cli-specific fields removed
+    const insertManifest = resolve(insertDest, "package.json"),
+      manifest = { ...nodeRequire("../package.json"), main: "init.js" },
+      excludes = ["bin", "type", "scripts", "engines", "dependencies"];
+    for (const key of excludes) delete manifest[key];
+    await fsp.writeFile(insertManifest, JSON.stringify(manifest));
+    // re-package enhanced sources into executable archive
+    await asar.createPackage(app, archive);
+    // cleanup extracted files unless in debug mode
+    if (!debug) await fsp.rm(app, { recursive: true });
     return true;
   };
 
 export {
+  backupApp,
+  restoreApp,
+  enhanceApp,
+  getInsertVersion,
   getResourcePath,
-  getAppPath,
-  getBackupPath,
-  checkEnhancementVersion,
   setNotionPath,
-  unpackApp,
-  applyEnhancements,
-  takeBackup,
-  restoreBackup,
 };

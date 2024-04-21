@@ -6,21 +6,21 @@
  * (https://notion-enhancer.github.io/) under the MIT license
  */
 
-import arg from "arg";
-import chalk from "chalk-template";
 import os from "node:os";
 import { createRequire } from "node:module";
+import chalk from "chalk-template";
+import arg from "arg";
 import {
-  getAppPath,
-  getBackupPath,
-  checkEnhancementVersion,
+  backupApp,
+  enhanceApp,
+  getInsertVersion,
+  getResourcePath,
+  restoreApp,
   setNotionPath,
-  unpackApp,
-  applyEnhancements,
-  takeBackup,
-  restoreBackup,
 } from "./scripts/enhance-desktop-app.mjs";
+import { greaterThan } from "./src/core/updateCheck.mjs";
 import { existsSync } from "node:fs";
+
 const nodeRequire = createRequire(import.meta.url),
   manifest = nodeRequire("./package.json");
 
@@ -144,7 +144,7 @@ const printHelp = (commands, options) => {
           chalk`  ${cmd[0].padEnd(cmdPad)}  {grey :}  ${cmd[1]}`,
         parseOpt = (opt) =>
           chalk`  ${opt[0].padEnd(optPad)}  {grey :}  ${opt[1][1]}`;
-      print`{bold.whiteBright ${name} v${version}}\n{grey ${homepage}}
+      print`{bold.whiteBright.underline ${name} v${version}}\n{grey ${homepage}}
       \n{bold.whiteBright USAGE}\n${name} <command> [options]
       \n{bold.whiteBright COMMANDS}\n${commands.map(parseCmd).join("\n")}
       \n{bold.whiteBright OPTIONS}\n${options.map(parseOpt).join("\n")}\n`;
@@ -160,8 +160,8 @@ const printHelp = (commands, options) => {
         os: os.release(),
       });
     } else {
-      const enhancerVersion = `${manifest.name}@v${manifest.version}`,
-        nodeVersion = `node@${process.version}`,
+      const nodeVersion = `node@${process.version}`,
+        enhancerVersion = `${manifest.name}@v${manifest.version}`,
         osVersion = `${process.platform}-${process.arch}/${os.release()}`;
       print`${enhancerVersion} via ${nodeVersion} on ${osVersion}\n`;
     }
@@ -170,40 +170,42 @@ const printHelp = (commands, options) => {
 try {
   const commands = [
       // ["command", "description"]
-      ["apply", "add enhancements to the notion app"],
-      ["remove", "return notion to its pre-enhanced/pre-modded state"],
-      ["check", "check the current state of the notion app"],
+      ["apply", "Inject the notion-enhancer into Notion desktop."],
+      ["remove", "Restore Notion desktop to its pre-enhanced state."],
+      ["check", "Report Notion desktop's enhancement state."],
     ],
     options = [
       // ["alias, option=example", [type, "description"]]
       [
         "--path=</path/to/notion/resources>",
-        [String, "manually provide a notion installation location"],
-      ],
-      [
-        "--overwrite",
-        [Boolean, "for rapid development; unsafely overwrite sources"],
+        [String, "Manually provide a Notion installation location."],
       ],
       [
         "--no-backup",
-        [Boolean, "skip backup; enhancement will be faster but irreversible"],
+        [Boolean, "Skip backup; enhancement will be irreversible."],
+      ],
+      [
+        "--json",
+        [Boolean, "Output JSON from the `check` and `--version` commands."],
       ],
       [
         "-y, --yes",
-        [Boolean, 'skip prompts; assume "yes" and run non-interactively'],
+        [Boolean, 'Skip prompts; assume "yes" and run non-interactively.'],
       ],
       [
         "-n, --no",
-        [Boolean, 'skip prompts; assume "no" and run non-interactively'],
+        [Boolean, 'Skip prompts; assume "no" and run non-interactively.'],
       ],
       [
         "-q, --quiet",
-        [Boolean, 'skip prompts; assume "no" unless -y and hide all output'],
+        [Boolean, 'Skip prompts; assume "no" unless -y and hide all output.'],
       ],
-      ["-d, --debug", [Boolean, "show detailed error messages"]],
-      ["-j, --json", [Boolean, "display json output (where applicable)"]],
-      ["-h, --help", [Boolean, "display usage information"]],
-      ["-v, --version", [Boolean, "display version number"]],
+      [
+        "-d, --debug",
+        [Boolean, "Show detailed error messages and keep extracted files."],
+      ],
+      ["-h, --help", [Boolean, "Display usage information for this CLI."]],
+      ["-v, --version", [Boolean, "Display this CLI's version number."]],
     ];
 
   const args = arg(compileOptsToArgSpec(options));
@@ -216,149 +218,121 @@ try {
   if (args["--version"]) printVersion(), process.exit();
   if (args["--path"]) setNotionPath(args["--path"]);
 
-  const appPath = getAppPath(),
-    backupPath = getBackupPath(),
-    insertVersion = checkEnhancementVersion();
+  const appPath = getResourcePath("app.asar"),
+    backupPath = getResourcePath("app.asar.bak"),
+    insertVersion = await getInsertVersion(),
+    updateAvailable = greaterThan(manifest.version, insertVersion);
 
   const messages = {
-    "notion-found": `notion installation found`,
-    "notion-not-found": `notion installation not found (corrupted or nonexistent)`,
-    "notion-is-packed": `electron archive found: extracting app.asar`,
+    "notion-found": insertVersion
+      ? // prettier-ignore
+        `Notion desktop found with ${manifest.name} v${insertVersion
+      } applied${updateAvailable ? "" : " (up to date)"}.`
+      : `Notion desktop found (no enhancements applied).`,
+    "notion-not-found": `Notion desktop not found.`,
 
-    "not-applied": `notion-enhancer not applied`,
-    "version-applied": `notion-enhancer v${manifest.version} applied`,
-    "version-mismatch": `notion-enhancer v${insertVersion} applied != v${manifest.version} current`,
-    "prompt-version-replace": `replace?`,
+    // prettier-ignore
+    "update-available": chalk`v${manifest.version
+    } is available! To apply, run {underline ${manifest.name} apply -y}.`,
+    // prettier-ignore
+    "update-confirm": `${updateAvailable ? "Upgrade" : "Downgrade"
+    } to ${manifest.name}${manifest.name} v${manifest.version}?`,
 
-    "backup-found": `backup found`,
-    "backup-not-found": `backup not found`,
-    "creating-backup": `backing up notion before enhancement`,
-    "restoring-backup": `restoring`,
-    "inserting-enhancements": `inserting enhancements and patching notion sources`,
-    "manual-removal-instructions": `to remove the notion-enhancer from notion, uninstall notion and
-    then install a vanilla version of the app from https://www.notion.so/desktop (mac,
-    windows) or ${manifest.homepage}/getting-started/installation (linux)`,
+    "backup-found": `Restoring to pre-enhanced state from backup...`,
+    "backup-not-found": chalk`No backup found: to restore Notion desktop to its pre-enhanced state,
+    uninstall it and reinstall Notion from {underline https://www.notion.so/desktop}.`,
+
+    "backup-app": `Backing up app before enhancement...`,
+    "enhance-app": `Enhancing and patching app sources...`,
   };
   const SUCCESS = chalk`{bold.whiteBright SUCCESS} {green ✔}`,
     FAILURE = chalk`{bold.whiteBright FAILURE} {red ✘}`,
     CANCELLED = chalk`{bold.whiteBright CANCELLED} {red ✘}`,
     INCOMPLETE = Symbol();
 
-  const interactiveRestoreBackup = async () => {
-    if (backupPath) {
-      // replace enhanced app with vanilla app.bak/app.asar.bak
-      print`  {grey * ${messages["backup-found"]}: ${messages["restoring-backup"]}} `;
-      startSpinner();
-      await restoreBackup();
-      stopSpinner();
-      return INCOMPLETE;
-    } else {
-      print`  {red * ${messages["backup-not-found"]}: ${messages["manual-removal-instructions"]}}\n`;
+  const interactiveRestore = async () => {
+    if (!backupPath || !existsSync(backupPath)) {
+      print`  {red * ${messages["backup-not-found"]}}\n`;
       return FAILURE;
     }
+    print`  {grey * ${messages["backup-found"]}} `;
+    startSpinner();
+    await restoreApp();
+    stopSpinner();
+    return SUCCESS;
   };
 
-  const canEnhancementsBeApplied = async () => {
-      if (!appPath) {
-        // notion not installed
+  const getNotion = () => {
+      if (!appPath || !existsSync(appPath)) {
         print`  {red * ${messages["notion-not-found"]}}\n`;
         return FAILURE;
-      } else if (insertVersion === manifest.version) {
-        // same version already applied
-        if (args["--overwrite"]) {
-          print`  {grey * ${messages["inserting-enhancements"]}} `;
-          startSpinner();
-          await applyEnhancements();
-          stopSpinner();
-          print`  {grey * ${messages["version-applied"]}}\n`;
-        } else {
-          print`  {grey * ${messages["notion-found"]}: ${messages["version-applied"]}}\n`;
-        }
-        return SUCCESS;
+      } else {
+        print`  {grey * ${messages["notion-found"]}}\n`;
+        return INCOMPLETE;
       }
-      if (insertVersion && insertVersion !== manifest.version) {
+    },
+    compareVersions = async () => {
+      if (insertVersion === manifest.version) {
+        // same version already applied
+        print`  {grey * ${messages["notion-found"]}}\n`;
+        return SUCCESS;
+      } else if (insertVersion) {
         // diff version already applied
-        print`  {grey * ${messages["notion-found"]}: ${messages["version-mismatch"]}}\n`;
-        // prettier-ignore
-        const promptReplacement = await promptConfirmation(messages["prompt-version-replace"]);
+        print`  {grey * ${messages["notion-found"]}}\n`;
+        const replace = await promptConfirmation(messages["update-confirm"]);
         print`\n`;
-        return ["Y", "y"].includes(promptReplacement)
-          ? await interactiveRestoreBackup()
+        return ["Y", "y"].includes(replace)
+          ? (await interactiveRestore()) === SUCCESS
+            ? INCOMPLETE
+            : FAILURE
           : CANCELLED;
       } else return INCOMPLETE;
     },
-    interactiveApplyEnhancements = async () => {
-      if (appPath.endsWith(".asar")) {
-        print`  {grey * ${messages["notion-is-packed"]}} `;
-        // asar blocks thread = spinner won't actually spin
-        // first frame at least can serve as waiting indicator
-        startSpinner();
-        await unpackApp();
-        stopSpinner();
-      }
-      // backup is used to restore app to pre-enhanced state
-      // new backup should be taken every enhancement
-      // e.g. in case old backup was from prev. version of app
+    interactiveEnhance = async () => {
       if (!args["--no-backup"]) {
-        print`  {grey * ${messages["creating-backup"]}} `;
+        print`  {grey * ${messages["backup-app"]}} `;
         startSpinner();
-        await takeBackup();
+        await backupApp();
         stopSpinner();
       }
-      print`  {grey * ${messages["inserting-enhancements"]}} `;
+      print`  {grey * ${messages["enhance-app"]}} `;
       startSpinner();
-      await applyEnhancements();
+      await enhanceApp(__debug);
       stopSpinner();
-      print`  {grey * ${messages["version-applied"]}}\n`;
-      return SUCCESS;
-    },
-    interactiveRemoveEnhancements = async () => {
-      if (!appPath) {
-        // notion not installed
-        print`  {red * ${messages["notion-not-found"]}}\n`;
-        return FAILURE;
-      } else if (insertVersion) {
-        print`  {grey * ${messages["notion-found"]}: ${messages["version-applied"]}}\n`;
-        return (await interactiveRestoreBackup()) === INCOMPLETE
-          ? SUCCESS
-          : FAILURE;
-      }
-      print`  {grey * ${messages["notion-found"]}: ${messages["not-applied"]}}\n`;
       return SUCCESS;
     };
 
   switch (args["_"][0]) {
     case "apply": {
-      print`{bold.whiteBright [NOTION-ENHANCER] APPLY}\n`;
-      let res = await canEnhancementsBeApplied();
-      if (res === INCOMPLETE) res = await interactiveApplyEnhancements();
+      print`{bold.whiteBright [${manifest.name.toUpperCase()}] APPLY}\n`;
+      let res = getNotion();
+      if (res === INCOMPLETE) res = await compareVersions();
+      if (res === INCOMPLETE) res = await interactiveEnhance();
       print`${res}\n`;
       break;
     }
     case "remove": {
-      print`{bold.whiteBright [NOTION-ENHANCER] REMOVE}\n`;
-      const res = await interactiveRemoveEnhancements();
+      print`{bold.whiteBright [${manifest.name.toUpperCase()}] REMOVE}\n`;
+      let res = getNotion();
+      if (res === INCOMPLETE) {
+        res = insertVersion ? await interactiveRestore() : SUCCESS;
+      }
       print`${res}\n`;
       break;
     }
     case "check": {
       if (__json) {
-        printObject({
-          appPath,
-          backupPath,
-          insertVersion,
-          currentVersion: manifest.version,
-        });
-        process.exit();
+        const cliVersion = manifest.version,
+          state = { appPath, backupPath, insertVersion, cliVersion };
+        if (appPath && !existsSync(appPath)) state.appPath = null;
+        if (backupPath && !existsSync(backupPath)) state.backupPath = null;
+        printObject(state), process.exit();
       }
-      print`{bold.whiteBright [NOTION-ENHANCER] CHECK:} `;
-      if (manifest.version === insertVersion) {
-        print`${messages["version-applied"]}\n`;
-      } else if (insertVersion) {
-        print`${messages["version-mismatch"]}\n`;
-      } else if (appPath) {
-        print`${messages["not-applied"]}\n`;
-      } else print`${messages["notion-not-found"]}\n`;
+      print`{bold.whiteBright [${manifest.name.toUpperCase()}] CHECK}\n`;
+      let res = getNotion();
+      if (res === INCOMPLETE && updateAvailable) {
+        print`  {grey * ${messages["update-available"]}}\n`;
+      }
       break;
     }
 
@@ -375,6 +349,6 @@ try {
       .map((at) => at.replace(/\s{4}/g, "  "))
       .join("\n")}}`;
   } else {
-    print`{bold.red Error:} ${message} {grey (run with -d for more information)}\n`;
+    print`{bold.red Error:} ${message} {grey (Run with -d for more information.)}\n`;
   }
 }

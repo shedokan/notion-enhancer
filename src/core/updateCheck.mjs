@@ -25,8 +25,10 @@ const parseVersion = (semver) => {
       .map((v) => v ?? "")
       .map((v) => (/^\d+$/.test(v) ? parseInt(v) : v));
   },
+  // is a < b
   greaterThan = (a, b) => {
-    // is a greater than b
+    if (a && !b) return true;
+    if (!a && b) return false;
     a = parseVersion(a);
     b = parseVersion(b);
     for (let i = 0; i < a.length; i++) {
@@ -44,4 +46,4 @@ const checkForUpdate = async () => {
     return !(await checkForUpdate()) && version !== _release;
   };
 
-export { checkForUpdate, isDevelopmentBuild };
+export { checkForUpdate, isDevelopmentBuild, greaterThan };

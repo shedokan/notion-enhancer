@@ -26,7 +26,7 @@ if (isElectron()) {
 
   module.exports = async (target, __exports, __eval) => {
     const __getApi = () => globalThis.__enhancerApi;
-    if (target === ".webpack/main/index") require("./worker.js");
+    if (target === ".webpack/main/index.js") require("./worker.js");
     else {
       // expose globalThis.__enhancerApi to scripts
       const { contextBridge } = require("electron");
