@@ -174,36 +174,16 @@ try {
       ["remove", "Restore Notion desktop to its pre-enhanced state."],
       ["check", "Report Notion desktop's enhancement state."],
     ],
+    // prettier-ignore
     options = [
       // ["alias, option=example", [type, "description"]]
-      [
-        "--path=</path/to/notion/resources>",
-        [String, "Manually provide a Notion installation location."],
-      ],
-      [
-        "--no-backup",
-        [Boolean, "Skip backup; enhancement will be irreversible."],
-      ],
-      [
-        "--json",
-        [Boolean, "Output JSON from the `check` and `--version` commands."],
-      ],
-      [
-        "-y, --yes",
-        [Boolean, 'Skip prompts; assume "yes" and run non-interactively.'],
-      ],
-      [
-        "-n, --no",
-        [Boolean, 'Skip prompts; assume "no" and run non-interactively.'],
-      ],
-      [
-        "-q, --quiet",
-        [Boolean, 'Skip prompts; assume "no" unless -y and hide all output.'],
-      ],
-      [
-        "-d, --debug",
-        [Boolean, "Show detailed error messages and keep extracted files."],
-      ],
+      ["--path=</path/to/notion/resources>", [String, "Manually provide a Notion installation location."]],
+      ["--no-backup", [Boolean, "Skip backup; enhancement will be irreversible."]],
+      ["--json", [Boolean, "Output JSON from the `check` and `--version` commands."]],
+      ["-y, --yes", [Boolean, 'Skip prompts; assume "yes" and run non-interactively.']],
+      ["-n, --no", [Boolean, 'Skip prompts; assume "no" and run non-interactively.']],
+      ["-q, --quiet", [Boolean, 'Skip prompts; assume "no" unless -y and hide all output.']],
+      ["-d, --debug", [Boolean, "Show detailed error messages and keep extracted files."]],
       ["-h, --help", [Boolean, "Display usage information for this CLI."]],
       ["-v, --version", [Boolean, "Display this CLI's version number."]],
     ];

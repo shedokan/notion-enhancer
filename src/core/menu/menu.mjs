@@ -37,14 +37,14 @@ const categories = [
       description: `Extensions add to the functionality and layout of the Notion
         client, interacting with and modifying existing interfaces.`,
     },
-    {
-      icon: "plug",
-      id: "integrations",
-      title: "Integrations",
-      description: `<span class="text-[color:var(--theme--fg-red)]">
-        Integrations access and modify Notion content. They interact directly with
-        <mark>https://www.notion.so/api/v3</mark>. Use at your own risk.</span>`,
-    },
+    // {
+    //   icon: "plug",
+    //   id: "integrations",
+    //   title: "Integrations",
+    //   description: `<span class="text-[color:var(--theme--fg-red)]">
+    //     Integrations access and modify Notion content. They interact directly with
+    //     <mark>https://www.notion.so/api/v3</mark>. Use at your own risk.</span>`,
+    // },
   ],
   sidebar = [
     "notion-enhancer",

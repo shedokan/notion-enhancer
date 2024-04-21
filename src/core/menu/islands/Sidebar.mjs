@@ -20,10 +20,9 @@ function SidebarHeading({}, ...children) {
 function SidebarButton({ id, icon, ...props }, ...children) {
   const { html, extendProps, setState, useState } = globalThis.__enhancerApi,
     $btn = html`<${props["href"] ? "a" : "button"}
-      class="flex items-center select-none text-[14px]
-      min-h-[27px] px-[12px] my-px last:mb-[12px] w-full
-      transition hover:bg-[color:var(--theme--bg-hover)]
-      disabled:hidden rounded-[3px]"
+      class="flex items-center select-none cursor-pointer text-[14px]
+      transition hover:bg-[color:var(--theme--bg-hover)] disabled:hidden
+      min-h-[27px] w-full my-px last:mb-[12px] px-[12px] rounded-[4px]"
       ...${props}
     >
       ${icon
