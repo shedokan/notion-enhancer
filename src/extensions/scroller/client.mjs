@@ -8,11 +8,11 @@
 import { FloatingButton } from "../../core/islands/FloatingButton.mjs";
 
 export default async (api, db) => {
-  const { html, addFloatingButton, removeFloatingButton } = api,
-    { addMutationListener, removeMutationListener } = api,
+  const { html, addMutationListener } = api,
+    { addFloatingButton, removeFloatingButton } = api,
     showScrollToBottom = await db.get("showScrollToBottom"),
     distanceUntilShown = await db.get("distanceUntilScrollToTopShown"),
-    scrollUnits = await db.get("scrollDistanceUnits"),
+    scrollUnit = await db.get("scrollDistanceUnit"),
     behavior = (await db.get("smoothScrolling")) ? "smooth" : "auto",
     scroller = ".notion-frame > .notion-scroller";
 
@@ -32,7 +32,7 @@ export default async (api, db) => {
       if (!$scroller) return;
       const { scrollTop, scrollHeight, clientHeight } = $scroller;
       let scrollDist = scrollTop;
-      if (scrollUnits === "Percent") {
+      if (scrollUnit === "Percent") {
         scrollDist = (scrollTop / (scrollHeight - clientHeight)) * 100;
         if (isNaN(scrollDist)) scrollDist = 0;
       }

@@ -18,11 +18,12 @@ function TopbarButton({ icon, ...props }, ...children) {
     [&>i]:size-[20px]`,
   });
 
-  return html`<button ...${props}>
+  // [role="button"] == `-webkit-app-region: no-drag`
+  return html`<div role="button" ...${props}>
     ${props.innerHTML || children.length
       ? children
       : html`<i class="i-${icon}" />`}
-  </button>`;
+  </div>`;
 }
 
 export { TopbarButton };

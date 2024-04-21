@@ -1,6 +1,7 @@
 [
   "core",
   "extensions/topbar",
+  "extensions/tweaks",
   "extensions/scroller",
   "extensions/outliner",
   "extensions/word-counter",

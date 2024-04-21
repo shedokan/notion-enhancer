@@ -39,7 +39,7 @@
     },
     {
       "type": "select",
-      "key": "scrollDistanceUnits",
+      "key": "scrollDistanceUnit",
       "description": "The unit to measure the above distance in, e.g. you may wish the button to appear at 90% down any page or only on pages that scroll down further than a certain number of pixels.",
       "values": ["Percent", "Pixels"]
     }
