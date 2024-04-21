@@ -1,6 +1,5 @@
 [
   "core",
-  "extensions/titlebar",
   "extensions/topbar",
   "extensions/scroller",
   "extensions/outliner",
