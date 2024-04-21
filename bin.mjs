@@ -252,21 +252,18 @@ try {
       }
     },
     compareVersions = async () => {
-      if (insertVersion === manifest.version) {
-        // same version already applied
-        print`  {grey * ${messages["notion-found"]}}\n`;
-        return SUCCESS;
-      } else if (insertVersion) {
-        // diff version already applied
-        print`  {grey * ${messages["notion-found"]}}\n`;
-        const replace = await promptConfirmation(messages["update-confirm"]);
-        print`\n`;
-        return ["Y", "y"].includes(replace)
-          ? (await interactiveRestore()) === SUCCESS
-            ? INCOMPLETE
-            : FAILURE
-          : CANCELLED;
-      } else return INCOMPLETE;
+      if (!insertVersion) return INCOMPLETE;
+      // same version already applied
+      if (insertVersion === manifest.version) return SUCCESS;
+      // diff version already applied
+      print`  {grey * ${messages["notion-found"]}}\n`;
+      const replace = await promptConfirmation(messages["update-confirm"]);
+      print`\n`;
+      return ["Y", "y"].includes(replace)
+        ? (await interactiveRestore()) === SUCCESS
+          ? INCOMPLETE
+          : FAILURE
+        : CANCELLED;
     },
     interactiveEnhance = async () => {
       if (!args["--no-backup"]) {
