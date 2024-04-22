@@ -121,5 +121,5 @@
   ],
   "clientStyles": ["client.css"],
   "clientScripts": ["client.mjs"],
-  "electronScripts": [[".webpack/main/index", "electron.cjs"]]
+  "electronScripts": [[".webpack/main/index.js", "electron.cjs"]]
 }
