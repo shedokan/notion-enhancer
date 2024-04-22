@@ -185,7 +185,7 @@ const renderMenu = async () => {
 const importApi = () => {
     return (_apiImport ??= (async () => {
       const api = globalThis.__enhancerApi;
-      if (typeof api === "undefined") await import("../../common/system.js");
+      if (typeof api === "undefined") await import("../../api/system.js");
       await import("../../load.mjs").then((i) => i.default);
     })());
   },

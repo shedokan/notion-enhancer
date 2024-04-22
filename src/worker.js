@@ -71,7 +71,7 @@ const initDatabase = async () => {
             value = JSON.parse(__statements.select.get(key)?.value);
           } catch {}
         } else value = (await chrome.storage.local.get([key]))[key];
-        return value ?? args.fallbacks[args.key];
+        return value ?? args.fallbacks?.[args.key];
       }
       case "set": {
         const key = namespaceify(args.key),
@@ -89,7 +89,6 @@ const initDatabase = async () => {
           ? (__transactions.remove(keys), true)
           : chrome.storage.local.remove(keys);
       }
-
       case "export": {
         // returns key/value pairs within scope w/out namespace
         // prefix e.g. to streamline importing from one profile and
@@ -149,6 +148,39 @@ if (IS_ELECTRON) {
         .forEach((tab) => chrome.tabs.reload(tab.id));
     };
 
+  const userScriptsAvailable = () => {
+      // manifest v3 userscripts require developer mode to be
+      // enabled in the browser's extension settings
+      try {
+        chrome.userScripts;
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    registerCustomScript = async () => {
+      if (!userScriptsAvailable()) return;
+      // enhancer apis are not available in the worker in-browser,
+      // manual steps are required to get nested values from the db
+      const key = "customScript",
+        matches = ["*://*.notion.so/*"],
+        coreId = "0f0bf8b6-eae6-4273-b307-8fc43f2ee082",
+        profileId =
+          (await queryDatabase([], "get", { key: "activeProfile" })) ??
+          (await queryDatabase([], "get", { key: "profileIds" }))?.[0] ??
+          "default",
+        customScript = await queryDatabase([profileId, coreId], "get", { key }),
+        existingScripts = await chrome.userScripts.getScripts({ ids: [key] }),
+        code = customScript?.content || "";
+      if (existingScripts[0]) {
+        if (code === existingScripts[0]?.code) return;
+        chrome.userScripts.update([{ id: key, matches, js: [{ code }] }]);
+      } else if (code) {
+        chrome.userScripts.register([{ id: key, matches, js: [{ code }] }]);
+      }
+    };
+  registerCustomScript();
+
   chrome.action.onClicked.addListener(openEnhancerMenu);
   // long-lived connection for rapid two-way messaging
   // b/w client and worker, primarily used for db wrapper:
@@ -163,6 +195,13 @@ if (IS_ELECTRON) {
         const { namespace, query, args } = message.data,
           res = await queryDatabase(namespace, query, args);
         if (invocation) port.postMessage({ invocation, message: res });
+        // re-register userscript on updates:
+        // profile change, db import, file upload, file deletion
+        const customScriptChanged =
+          query === "import" ||
+          (query === "set" &&
+            ["activeProfile", "customScript"].includes(args.key));
+        if (customScriptChanged) registerCustomScript();
       }
       if (message === "load-complete") {
         if (!openMenuInTabs.has(tabId)) return;

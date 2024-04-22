@@ -43,7 +43,7 @@ export default (async () => {
   // the dom must be re-imported
 
   await Promise.all([
-    IS_ELECTRON || import(enhancerUrl("common/registry.js")),
+    IS_ELECTRON || import(enhancerUrl("api/registry.js")),
     import(enhancerUrl("api/interface.mjs")),
     import(enhancerUrl("api/state.js")),
   ]);

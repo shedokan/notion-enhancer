@@ -19,15 +19,13 @@
   "permissions": [
     "tabs",
     "storage",
+    "userScripts",
     "clipboardRead",
     "clipboardWrite",
     "unlimitedStorage"
   ],
   "host_permissions": ["*://*.notion.so/*"],
   "web_accessible_resources": [
-    {
-      "matches": ["*://*.notion.so/*"],
-      "resources": ["/*"]
-    }
+    { "matches": ["*://*.notion.so/*"], "resources": ["/*"] }
   ]
 }

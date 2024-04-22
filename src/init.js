@@ -19,7 +19,7 @@ if (isElectron()) {
 
   const { enhancerUrl } = globalThis.__enhancerApi,
     { getMods, isEnabled, modDatabase } = globalThis.__enhancerApi,
-    API_LOADED = new Promise((res, rej) => {
+    API_LOADED = new Promise((res) => {
       const onReady = globalThis.__enhancerReady;
       globalThis.__enhancerReady = () => (onReady?.(), res());
     });
@@ -33,12 +33,18 @@ if (isElectron()) {
       contextBridge.exposeInMainWorld("__getEnhancerApi", __getApi);
 
       // load clientStyles, clientScripts
-      document.addEventListener("readystatechange", () => {
+      document.addEventListener("readystatechange", async () => {
         if (document.readyState !== "complete") return false;
         const $script = document.createElement("script");
         $script.type = "module";
         $script.src = enhancerUrl("load.mjs");
         document.head.append($script);
+
+        // register user-provided javascript for execution in-app
+        const { webFrame } = require("electron"),
+          db = await modDatabase("0f0bf8b6-eae6-4273-b307-8fc43f2ee082"),
+          customScript = (await db.get("customScript"))?.content;
+        if (customScript) webFrame.executeJavaScript(customScript);
       });
     }
 
