@@ -8,27 +8,30 @@
 import { FloatingButton } from "../../core/islands/FloatingButton.mjs";
 
 export default async (api, db) => {
-  const { html, addMutationListener } = api,
-    { addFloatingButton, removeFloatingButton } = api,
+  const { html, addFloatingButton, removeFloatingButton } = api,
+    { addMutationListener, removeMutationListener } = api,
+    jumpToWeek = await db.get("jumpToWeek"),
+    todayButton = `.notion-collection_view_page-block [aria-label="Previous Month"] + [role="button"]`,
+    todayBubble = `.notion-calendar-view-day[style*="background"]`,
     showScrollToBottom = await db.get("showScrollToBottom"),
     distanceUntilShown = await db.get("distanceUntilScrollToTopShown"),
     scrollUnit = await db.get("scrollDistanceUnit"),
-    behavior = (await db.get("smoothScrolling")) ? "smooth" : "auto",
+    scrollBehavior = (await db.get("smoothScrolling")) ? "smooth" : "auto",
     scroller = ".notion-frame .notion-scroller";
 
-  let $scroller;
-  const scrollTo = (top) => $scroller?.scroll({ top, behavior }),
+  let $scroller, $todayButton;
+  const scrollTo = (top, behavior) => $scroller?.scroll({ top, behavior }),
     $scrollToBottom = html`<${FloatingButton}
-      onclick="${() => scrollTo($scroller.scrollHeight)}"
+      onclick="${() => scrollTo($scroller.scrollHeight, scrollBehavior)}"
       aria-label="Scroll to bottom"
       ><i class="i-chevrons-down" />
     <//>`,
     $scrollToTop = html`<${FloatingButton}
-      onclick=${() => scrollTo(0)}
+      onclick=${() => scrollTo(0, scrollBehavior)}
       aria-label="Scroll to top"
       ><i class="i-chevrons-up" />
     <//>`,
-    onScroll = () => {
+    onPageScrolled = () => {
       if (!$scroller) return;
       const { scrollTop, scrollHeight, clientHeight } = $scroller;
       let scrollDist = scrollTop;
@@ -46,12 +49,29 @@ export default async (api, db) => {
         else addFloatingButton($scrollToBottom);
       } else removeFloatingButton($scrollToTop);
     },
+    onTodayLoaded = () => {
+      const $bubble = document.querySelector(todayBubble);
+      if (!$bubble) return;
+      // calendar will jump anyway when pinning the current month,
+      // so ignore smooth scroll setting and jump direct to week
+      scrollTo($bubble.offsetParent.offsetParent.offsetTop + 57, "auto");
+      removeMutationListener(onTodayLoaded);
+    },
+    onTodayClicked = () => {
+      removeMutationListener(onTodayLoaded);
+      addMutationListener(todayBubble, onTodayLoaded);
+    },
     setup = () => {
       if (document.contains($scroller)) return;
       $scroller = document.querySelector(scroller);
-      $scroller?.removeEventListener("scroll", onScroll);
-      $scroller?.addEventListener("scroll", onScroll);
-      onScroll();
+      $scroller?.removeEventListener("scroll", onPageScrolled);
+      $scroller?.addEventListener("scroll", onPageScrolled);
+      onPageScrolled();
+      if (jumpToWeek) {
+        $todayButton = document.querySelector(todayButton);
+        $todayButton?.removeEventListener("click", onTodayClicked);
+        $todayButton?.addEventListener("click", onTodayClicked);
+      }
     };
   addMutationListener(scroller, setup, { subtree: false });
   setup();

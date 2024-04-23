@@ -21,7 +21,7 @@
     {
       "type": "toggle",
       "key": "smoothScrolling",
-      "description": "Smoothly animates any scrolling triggered by this extension. Disable this to jump across pages instantly.",
+      "description": "Smoothly animates scrolling triggered by this extension. Disable this to jump across pages instantly.",
       "value": true
     },
     { "type": "heading", "label": "Pages" },
@@ -42,6 +42,13 @@
       "key": "scrollDistanceUnit",
       "description": "The unit to measure the above distance in, e.g. you may wish the button to appear at 90% down any page or only on pages that scroll down further than a certain number of pixels.",
       "values": ["Percent", "Pixels"]
+    },
+    { "type": "heading", "label": "Calendars" },
+    {
+      "type": "toggle",
+      "key": "jumpToWeek",
+      "description": "Jump to the current week (not just the current month) when clicking the 'Today' button on a full-page calendar view.",
+      "value": true
     }
   ],
   "clientScripts": ["client.mjs"]
