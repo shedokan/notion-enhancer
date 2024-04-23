@@ -34,7 +34,7 @@ function Mod({
     ${thumbnail
       ? html`<img
           src="${enhancerUrl(`${_src}/${thumbnail}`)}"
-          class="rounded-[4px] mr-[12px] h-[74px] my-auto"
+          class="rounded-[4px] mr-[12px] h-[74px] aspect-video my-auto"
         />`
       : ""}
     <div class="flex-(~ col) w-full">

@@ -40,6 +40,12 @@
     },
     {
       "type": "toggle",
+      "key": "hoverableTimelineTitles",
+      "description": "Shows the full title of a timeline item on hover if it has been truncated for being too long.",
+      "value": false
+    },
+    {
+      "type": "toggle",
       "key": "snappyTransitions",
       "description": "Disables style animations for a snappier experience across the board. This will not affect JavaScript-powered animations, e.g. the left sidebar popping out.",
       "value": false
