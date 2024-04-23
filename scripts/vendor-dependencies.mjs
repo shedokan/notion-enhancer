@@ -20,34 +20,32 @@ const esmVersion = "135",
     return { [`${scopedName.replace(/\//g, "-")}.mjs`]: bundleSrc };
   };
 
-const dependencies = {
-  ...esmBundle({ name: "htm", version: "3.1.1" }),
-  ...esmBundle({
-    name: "lucide",
-    version: "0.319.0",
-    path: "dist/umd/lucide.mjs",
-  }),
-  ...esmBundle({
-    name: "@unocss/core",
-    version: "0.58.5",
-    exports: ["createGenerator", "expandVariantGroup"],
-  }),
-  ...esmBundle({
-    name: "@unocss/preset-uno",
-    version: "0.58.5",
-    exports: ["presetUno"],
-  }),
-  "@unocss-preflight-tailwind.css":
-    "https://esm.sh/@unocss/reset@0.58.5/tailwind.css",
-  "coloris.min.js":
-    "https://cdn.jsdelivr.net/gh/mdbassit/Coloris@v0.22.0/dist/coloris.min.js",
-  "coloris.min.css":
-    "https://cdn.jsdelivr.net/gh/mdbassit/Coloris@v0.22.0/dist/coloris.min.css",
-};
+const uno = "0.59.4",
+  coloris = "https://cdn.jsdelivr.net/gh/mdbassit/coloris@v0.24.0/dist",
+  dependencies = {
+    ...esmBundle({ name: "htm", version: "3.1.1" }),
+    ...esmBundle({
+      name: "lucide",
+      version: "0.372.0",
+      path: "dist/umd/lucide.mjs",
+    }),
+    ...esmBundle({
+      name: "@unocss/core",
+      version: uno,
+      exports: ["createGenerator", "expandVariantGroup"],
+    }),
+    ...esmBundle({
+      name: "@unocss/preset-uno",
+      version: uno,
+      exports: ["presetUno"],
+    }),
+    "@unocss-preflight-tailwind.css": `https://esm.sh/@unocss/reset@${uno}/tailwind.css`,
+    "coloris.min.js": `${coloris}/coloris.min.js`,
+    "coloris.min.css": `${coloris}/coloris.min.css`,
+  };
 
 const output = fileURLToPath(new URL("../src/vendor", import.meta.url)),
-  write = (file, data) => fsp.writeFile(resolve(`${output}/${file}`), data),
-  append = (file, data) => fsp.appendFile(resolve(`${output}/${file}`), data);
+  write = (file, data) => fsp.writeFile(resolve(`${output}/${file}`), data);
 if (existsSync(output)) await fsp.rm(output, { recursive: true });
 await fsp.mkdir(output);
 for (const file in dependencies) {
