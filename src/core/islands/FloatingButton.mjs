@@ -9,19 +9,23 @@ const setupWrapper = () => {
     const notionHelp = ".notion-help-button",
       { html, addMutationListener } = globalThis.__enhancerApi,
       { removeMutationListener } = globalThis.__enhancerApi;
-    return (__$wrapper ??= new Promise((res, rej) => {
+    return (__$wrapper ??= new Promise((res) => {
       const addToDom = () => {
         const $help = document.querySelector(notionHelp);
         if (!$help) return;
-        const $wrapper = html`<div
-          class="notion-enhancer--floating-buttons z-50
-          absolute bottom-[calc(26px+env(safe-area-inset-bottom))]
-          flex gap-[12px] important:[&>.notion-help-button]:static"
-          style="right:${$help.style.right}"
-        ></div>`;
+        const gap = 12,
+          computedStyles = getComputedStyle($help),
+          visible = computedStyles.getPropertyValue("display") !== "none",
+          width = computedStyles.getPropertyValue("width"),
+          right = computedStyles.getPropertyValue("right"),
+          offset = visible ? parseInt(width) + parseInt(right) + gap : 26,
+          $wrapper = html`<div
+            class="notion-enhancer--floating-buttons z-50 gap-[${gap}px]
+            flex absolute bottom-[calc(26px+env(safe-area-inset-bottom))]"
+            style="right:${offset}px"
+          ></div>`;
         removeMutationListener(addToDom);
-        $help.replaceWith($wrapper);
-        $wrapper.append($help);
+        $help.after($wrapper);
         res($wrapper);
       };
       addMutationListener(notionHelp, addToDom);

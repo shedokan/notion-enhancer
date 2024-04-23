@@ -1,5 +1,5 @@
 /**
- * notion-enhancer: scroll to top
+ * notion-enhancer: scroller
  * (c) 2021 CloudHill <rl.cloudhill@gmail.com> (https://github.com/CloudHill)
  * (c) 2024 dragonwocky <thedragonring.bod@gmail.com> (https://dragonwocky.me/)
  * (https://notion-enhancer.github.io/) under the MIT license
@@ -14,7 +14,7 @@ export default async (api, db) => {
     distanceUntilShown = await db.get("distanceUntilScrollToTopShown"),
     scrollUnit = await db.get("scrollDistanceUnit"),
     behavior = (await db.get("smoothScrolling")) ? "smooth" : "auto",
-    scroller = ".notion-frame > .notion-scroller";
+    scroller = ".notion-frame .notion-scroller";
 
   let $scroller;
   const scrollTo = (top) => $scroller?.scroll({ top, behavior }),

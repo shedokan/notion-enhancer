@@ -11,7 +11,7 @@ import { PanelDescription } from "./islands/PanelDescription.mjs";
 export default async (api, db) => {
   const { html, debounce, addMutationListener, addPanelView } = api,
     behavior = (await db.get("smoothScrolling")) ? "smooth" : "auto",
-    scroller = ".notion-frame > .notion-scroller",
+    scroller = ".notion-frame .notion-scroller",
     equation = ".notion-text-equation-token",
     annotation = (await db.get("equationRendering"))
       ? ".katex-html"
@@ -78,10 +78,9 @@ export default async (api, db) => {
         $heading._$outline = html`<${Heading}
           indent=${getHeadingLevel($heading)}
           onclick=${() => {
-            $scroller.scrollTo({
-              top: getBlockOffset($heading) - 24,
-              behavior,
-            });
+            if (!$scroller) return;
+            const top = getBlockOffset($heading) - 24;
+            $scroller.scrollTo({ top, behavior });
           }}
           >${getHeadingTitle($heading)}
         <//>`;
@@ -96,6 +95,7 @@ export default async (api, db) => {
       size-[6px] rounded-full bg-[color:var(--theme--fg-secondary)]"
     ></span>`,
     onScroll = () => {
+      if (!$scroller) return;
       const $h = getHeadings().find(($h) => {
         return $scroller.scrollTop < getBlockOffset($h) - 16;
       })?._$outline;

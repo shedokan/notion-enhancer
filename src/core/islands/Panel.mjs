@@ -303,22 +303,34 @@ function Panel({
   // moves help button out of the way of open panel.
   // normally would place outside of an island, but in
   // this case is necessary for syncing up animations
-  const floatingButtons =
-      ".notion-enhancer--floating-buttons, .notion-help-button",
-    repositionFloatingButtons = async (width) => {
-      const $floatingButtons = document.querySelector(floatingButtons);
-      if (!$floatingButtons) return;
-      width ??= await getWidth();
-      if (isNaN(width)) width = minWidth;
-      if (!isPinned()) width = 0;
-      const to = `${26 + width}px`,
-        from = $floatingButtons.style.getPropertyValue("right");
-      if (from === to) return;
-      $floatingButtons.style.setProperty("right", to);
-      animate($floatingButtons, [({ right: from }, { right: to })]);
-      removeMutationListener(repositionFloatingButtons);
+  const notionHelp = ".notion-help-button",
+    floatingButtons = ".notion-enhancer--floating-buttons",
+    repositionCorner = async (offset) => {
+      const $help = document.querySelector(notionHelp),
+        $floating = document.querySelector(floatingButtons);
+      offset ??= await getWidth();
+      if (isNaN(offset)) offset = minWidth;
+      if (!isPinned()) offset = 0;
+      // offset help from panel edge
+      offset += 26;
+      for (const $btn of [$help, $floating]) {
+        if (!$btn) continue;
+        const computedStyles = getComputedStyle($btn),
+          visible = computedStyles.getPropertyValue("display") !== "none";
+        if (!visible) continue;
+        const width = computedStyles.getPropertyValue("width"),
+          from = computedStyles.getPropertyValue("right"),
+          to = offset + "px";
+        // offset floating buttons from help
+        offset += 12 + parseInt(width);
+        if (from === to) continue;
+        $btn.style.setProperty("right", to);
+        animate($btn, [({ right: from }, { right: to })]);
+      }
+      if ($help || $floating) removeMutationListener(repositionCorner);
     };
-  addMutationListener(floatingButtons, repositionFloatingButtons);
+  const corner = `${notionHelp}, ${floatingButtons}`;
+  addMutationListener(corner, repositionCorner, { subtree: false });
 
   $panel.pin = () => {
     if (isPinned() || !panelViews.length) return;
@@ -380,7 +392,7 @@ function Panel({
     const $parent = $panel.parentElement || $panel;
     $parent.style.setProperty("--panel--width", `${width}px`);
     if ($parent !== $panel) $panel.style.removeProperty("--panel--width");
-    repositionFloatingButtons(width);
+    repositionCorner(width);
   };
 
   useState(["panelViews"], async ([panelViews = []]) => {

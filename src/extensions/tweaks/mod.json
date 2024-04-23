@@ -21,7 +21,7 @@
     },
     {
       "type": "toggle",
-      "key": "HidelashMenu",
+      "key": "hideSlashMenu",
       "description": "Hide the commands popup when typing '/'.",
       "value": false
     },

@@ -287,7 +287,6 @@ const _tokens = new Set(),
     if (_stylesheet.innerHTML !== res.css) _stylesheet.innerHTML = res.css;
   };
 addMutationListener("*", (mutation) => {
-  const targets = [];
   if (mutation.type === "childList") {
     for (const node of mutation.addedNodes) extractTokens(node);
   } else if (mutation.type === "attributes") extractTokens(mutation.target);
