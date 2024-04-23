@@ -5,5 +5,6 @@
   "extensions/scroller",
   "extensions/outliner",
   "extensions/word-counter",
+  "extensions/no-peeking",
   "themes/classic-dark"
 ]
