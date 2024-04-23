@@ -3,7 +3,6 @@
   "version": "0.4.0",
   "id": "0a958f5a-17c5-48b5-8713-16190cae1959",
   "description": "Adds buttons to pages and full-page calendars to jump across content easily.",
-  "thumbnail": "scroller.png",
   "tags": ["scroll-to-top", "scroll-to-bottom", "calendar-scroll"],
   "authors": [
     {

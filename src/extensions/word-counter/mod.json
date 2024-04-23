@@ -3,7 +3,6 @@
   "version": "0.4.0",
   "id": "b99deb52-6955-43d2-a53b-a31540cd19a5",
   "description": "Adds word, character, sentence and block counts with average reading and speaking times to the panel.",
-  "thumbnail": "word-counter.jpg",
   "tags": ["panel"],
   "authors": [
     {
