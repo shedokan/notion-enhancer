@@ -132,33 +132,6 @@ const getComputedPropertyValue = (el, prop) => {
     variableAliases[variable.value] ??= variable.name;
   };
 
-const styleFonts = () => {
-  overrideStyle({
-    selector: `[style*="Segoe UI"]`,
-    property: "font-family",
-    variable: "font-sans",
-    specificity: [],
-  });
-  overrideStyle({
-    selector: `[style*="Georgia"]`,
-    property: "font-family",
-    variable: "font-serif",
-    specificity: [],
-  });
-  overrideStyle({
-    selector: `[style*="iawriter-mono"]`,
-    property: "font-family",
-    variable: "font-mono",
-    specificity: [],
-  });
-  overrideStyle({
-    selector: `[style*="SFMono-Regular"]`,
-    property: "font-family",
-    variable: "font-code",
-    specificity: [],
-  });
-};
-
 const styleText = () => {
   const primary = cssVariable({
       name: "fg-primary",
@@ -903,7 +876,6 @@ const styleCode = () => {
     ) { background: transparent !important; }`;
 };
 
-styleFonts();
 styleText();
 styleBorders();
 styleColoredText();

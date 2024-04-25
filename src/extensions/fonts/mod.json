@@ -1,0 +1,66 @@
+{
+  "name": "Fonts",
+  "version": "0.5.0",
+  "id": "e0d8d148-45e7-4d79-8313-e7b2ad8abe16",
+  "description": "Replace Notion's default fonts with any font installed on your system.",
+  "tags": ["customisation", "font-chooser"],
+  "authors": [
+    {
+      "name": "TorchAtlas",
+      "homepage": "https://github.com/torchatlas/",
+      "avatar": "https://avatars.githubusercontent.com/u/12666855"
+    },
+    {
+      "name": "dragonwocky",
+      "homepage": "https://dragonwocky.me/",
+      "avatar": "https://dragonwocky.me/avatar.jpg"
+    }
+  ],
+  "options": [
+    {
+      "type": "text",
+      "key": "sans",
+      "label": "Sans serif",
+      "description": "Sets the font used across Notion's interface and as the default page font. Leave this blank to use Notion's default sans serif font.",
+      "value": "ui-sans-serif, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, \"Apple Color Emoji\", Arial, sans-serif, \"Segoe UI Emoji\", \"Segoe UI Symbol\""
+    },
+    {
+      "type": "text",
+      "key": "serif",
+      "description": "Sets the font used on serif-styled pages (configurable via the <i class='i-ellipsis -mb-px'></i> <i>Style, export and more...</i> menu). Leave this blank to use Notion's default serif font.",
+      "value": "Lyon-Text, Georgia, ui-serif, serif"
+    },
+    {
+      "type": "text",
+      "key": "mono",
+      "description": "Sets the font used on mono-styled pages (configurable via the <i class='i-ellipsis -mb-px'></i> <i>Style, export and more...</i> menu). Leave this blank to use Notion's default monospaced font.",
+      "value": "iawriter-mono, Nitti, Menlo, Courier, monospace"
+    },
+    {
+      "type": "text",
+      "key": "code",
+      "description": "Sets the font used for code blocks and inline code. Leave this blank to use Notion's default code font.",
+      "value": "\"SFMono-Regular\", Menlo, Consolas, \"PT Mono\", \"Liberation Mono\", Courier, monospace"
+    },
+    {
+      "type": "text",
+      "key": "math",
+      "description": "Sets the font used for math equations. Leave this blank to use Notion's default math font.",
+      "value": "KaTeX_Main, Times New Roman, serif"
+    },
+    {
+      "type": "text",
+      "key": "quotes",
+      "description": "Sets the font used for quote blocks. Leave this blank to inherit the page's font style.",
+      "value": ""
+    },
+    {
+      "type": "text",
+      "key": "headings",
+      "description": "Sets the font used for page headings. Leave this blank to inherit the page's font style.",
+      "value": ""
+    }
+  ],
+  "clientStyles": ["client.css"],
+  "clientScripts": ["client.mjs"]
+}
