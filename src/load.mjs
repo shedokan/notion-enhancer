@@ -14,11 +14,11 @@ export default (async () => {
     signedIn = localStorage["LRU:KeyValueStore2:current-user-id"],
     pageLoaded = /(^\/$)|((-|\/)[0-9a-f]{32}((\?.+)|$))/.test(location.pathname),
     IS_MENU = location.href.startsWith(enhancerUrl("core/menu/index.html")),
-    IS_TABS = /\/app\/\.webpack\/renderer\/(draggable_)?tabs\/index.html$/.test(location.href),
+    IS_TABS = /\.webpack\/renderer\/tabs\/index.html$/.test(location.href),
     IS_ELECTRON = ['linux', 'win32', 'darwin'].includes(platform),
     API_LOADED = new Promise((res, rej) => {
-      const onReady = globalThis.__enhancerReady;
-      globalThis.__enhancerReady = () => (onReady?.(), res());
+      const onReady = globalThis.__enhancerApi.onReady;
+      globalThis.__enhancerApi.onReady = () => (onReady?.(), res());
     });
   globalThis.IS_TABS = IS_TABS;
 
@@ -72,11 +72,11 @@ export default (async () => {
       Promise.resolve(isCore || API_LOADED)
         .then(() => import(enhancerUrl(`${mod._src}/${script}`)))
         .then((script) => script.default(globalThis.__enhancerApi, db))
-        .then(() => !isCore || globalThis.__enhancerReady?.());
+        .then(() => !isCore || globalThis.__enhancerApi.onReady?.());
     }
   }
 
-  if (IS_MENU || IS_TABS) globalThis.__enhancerReady?.();
+  if (IS_MENU || IS_TABS) globalThis.__enhancerApi.onReady?.();
   return API_LOADED.then(() => {
     if (IS_MENU) console.log("notion-enhancer: ready");
     return globalThis.__enhancerApi;

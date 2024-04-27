@@ -9,7 +9,7 @@
 const injectTriggerOnce = (file, content) =>
     content +
     (!/require\(['|"]notion-enhancer['|"]\)/.test(content)
-      ? `\n\nrequire("notion-enhancer")('${file}',exports,(js)=>eval(js));`
+      ? `\n\nrequire("notion-enhancer")("${file}",exports,(js)=>eval(js));`
       : ""),
   replaceIfNotFound = ({ string, mode = "replace" }, search, replacement) =>
     string.includes(replacement)
@@ -59,18 +59,11 @@ const patches = {
       protocolInterceptor = `{const n="notion://www.notion.so/__notion-enhancer/";if(e.url.startsWith(n))return require("electron").net.fetch(\`file://\${require("path").join(__dirname,"..","..","node_modules","notion-enhancer",e.url.slice(n.length))}\`)}`;
     prepend(protocolHandler, protocolInterceptor);
     
-    // expose the app config to the global namespace for manipulation
-    // e.g. to enable development mode
+    // expose the app's config + cache + preferences to the global namespace
+    // e.g. to enable development mode or check if keep in background is enabled
     prepend(/\w\.exports=JSON\.parse\('\{"env":"production"/, "globalThis.__notionConfig=");
-
-    // expose the app store to the global namespace for reading
-    // e.g. to check if keep in background is enabled
-    prepend(/\w\.Store=\(0,\w\.configureStore\)/, "globalThis.__notionStore=");
     prepend(/\w\.updatePreferences=\w\.updatePreferences/, "globalThis.__updatePreferences=");
-
-    // conditionally create frameless windows
-    const titlebarStyle = `titleBarStyle:globalThis.__notionConfig?.titlebarStyle??"hiddenInset"`;
-    replace(`titleBarStyle:"hiddenInset"`, titlebarStyle);
+    prepend(/\w\.Store=\(0,\w\.configureStore\)/, "globalThis.__notionStore=");
 
     return content;
   },

@@ -6,7 +6,7 @@
 
 "use strict";
 
-module.exports = async ({}, db) => {
+module.exports = async (api, db) => {
   const { ipcMain, BrowserWindow } = require("electron");
   ipcMain.on("notion-enhancer:topbar", ({ sender }, message) => {
     const window = BrowserWindow.fromWebContents(sender);

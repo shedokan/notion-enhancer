@@ -1,0 +1,23 @@
+/**
+ * notion-enhancer: focus
+ * (c) 2020 Arecsu
+ * (c) 2024 dragonwocky <thedragonring.bod@gmail.com> (https://dragonwocky.me/)
+ * (https://notion-enhancer.github.io/) under the MIT license
+ */
+
+/* hide topbar */
+.notion-sidebar-container[aria-hidden] ~ div .notion-topbar {
+  opacity: 0 !important;
+  transition: opacity 200ms ease-in-out !important;
+}
+.notion-sidebar-container[aria-hidden] ~ div .notion-topbar:hover {
+  opacity: 1 !important;
+}
+
+/* hide tabs */
+body > #root.sidebar-collapsed {
+  transition: opacity 200ms ease-in-out;
+}
+body > #root.sidebar-collapsed:not(:hover) {
+  opacity: 0;
+}

@@ -100,7 +100,7 @@ let documentObserver,
     characterData: true,
     // whether to observe added/removed nodes
     childList: true,
-    // whether to observe parent/descendant nodes
+    // whether to observe nested nodes
     subtree: true,
   },
   mutationListeners = [];

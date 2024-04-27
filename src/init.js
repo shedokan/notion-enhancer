@@ -18,11 +18,7 @@ if (isElectron()) {
   require("./api/registry.js");
 
   const { enhancerUrl } = globalThis.__enhancerApi,
-    { getMods, isEnabled, modDatabase } = globalThis.__enhancerApi,
-    API_LOADED = new Promise((res) => {
-      const onReady = globalThis.__enhancerReady;
-      globalThis.__enhancerReady = () => (onReady?.(), res());
-    });
+    { getMods, isEnabled, modDatabase } = globalThis.__enhancerApi;
 
   module.exports = async (target, __exports, __eval) => {
     const __getApi = () => globalThis.__enhancerApi;
@@ -41,10 +37,12 @@ if (isElectron()) {
         document.head.append($script);
 
         // register user-provided javascript for execution in-app
-        const { webFrame } = require("electron"),
-          db = await modDatabase("0f0bf8b6-eae6-4273-b307-8fc43f2ee082"),
-          customScript = (await db.get("customScript"))?.content;
-        if (customScript) webFrame.executeJavaScript(customScript);
+        if (target === ".webpack/renderer/tab_browser_view/preload.js") {
+          const { webFrame } = require("electron"),
+            db = await modDatabase("0f0bf8b6-eae6-4273-b307-8fc43f2ee082"),
+            customScript = (await db.get("customScript"))?.content;
+          if (customScript) webFrame.executeJavaScript(customScript);
+        }
       });
     }
 
@@ -55,7 +53,7 @@ if (isElectron()) {
       for (let [scriptTarget, script] of mod.electronScripts ?? []) {
         if (target !== scriptTarget) continue;
         script = require(`./${mod._src}/${script}`);
-        API_LOADED.then(() => script(__getApi(), db, __exports, __eval));
+        script(__getApi(), db, __exports, __eval);
       }
     }
   };

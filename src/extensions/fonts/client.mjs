@@ -6,9 +6,8 @@
  * (https://notion-enhancer.github.io/) under the MIT license
  */
 
-"use strict";
-
 export default async (api, db) => {
+  const $root = document.documentElement;
   for (const style of [
     "sans",
     "serif",
@@ -19,7 +18,6 @@ export default async (api, db) => {
     "headings",
   ]) {
     const font = await db.get(style);
-    if (!font) continue;
-    document.documentElement.style.setProperty(`--font--${style}`, font);
+    if (font) $root.style.setProperty(`--font--${style}`, font);
   }
 };

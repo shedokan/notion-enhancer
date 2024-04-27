@@ -1,0 +1,25 @@
+{
+  "name": "Focus",
+  "version": "0.4.0",
+  "id": "5a08598d-bfac-4167-9ae8-2bd0e2ef141e",
+  "description": "Enter focus mode when the left sidebar is closed, hiding Notion's extraneous interface elements (e.g. the topbar) until they are hovered over.",
+  "tags": ["productivity", "focus-mode"],
+  "authors": [
+    {
+      "name": "dragonwocky",
+      "homepage": "https://dragonwocky.me/",
+      "avatar": "https://dragonwocky.me/avatar.jpg"
+    },
+    {
+      "name": "Arecsu",
+      "homepage": "https://github.com/Arecsu",
+      "avatar": "https://avatars.githubusercontent.com/u/12679098"
+    }
+  ],
+  "clientStyles": ["client.css"],
+  "clientScripts": ["client.mjs"],
+  "electronScripts": [
+    [".webpack/main/index.js", "electron.cjs"],
+    [".webpack/renderer/tabs/preload.js", "tabs.cjs"]
+  ]
+}

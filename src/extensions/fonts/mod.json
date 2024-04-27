@@ -6,14 +6,14 @@
   "tags": ["customisation", "font-chooser"],
   "authors": [
     {
-      "name": "TorchAtlas",
-      "homepage": "https://github.com/torchatlas/",
-      "avatar": "https://avatars.githubusercontent.com/u/12666855"
-    },
-    {
       "name": "dragonwocky",
       "homepage": "https://dragonwocky.me/",
       "avatar": "https://dragonwocky.me/avatar.jpg"
+    },
+    {
+      "name": "TorchAtlas",
+      "homepage": "https://github.com/torchatlas/",
+      "avatar": "https://avatars.githubusercontent.com/u/12666855"
     }
   ],
   "options": [
