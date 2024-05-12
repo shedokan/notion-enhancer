@@ -19,7 +19,7 @@ export default async (api, db) => {
     scrollBehavior = (await db.get("smoothScrolling")) ? "smooth" : "auto",
     scroller = ".notion-frame .notion-scroller";
 
-  let $scroller, $todayButton;
+  let $scroller, $today;
   const scrollTo = (top, behavior) => $scroller?.scroll({ top, behavior }),
     $scrollToBottom = html`<${FloatingButton}
       onclick="${() => scrollTo($scroller.scrollHeight, scrollBehavior)}"
@@ -50,27 +50,32 @@ export default async (api, db) => {
       } else removeFloatingButton($scrollToTop);
     },
     onTodayLoaded = () => {
-      const $bubble = document.querySelector(todayBubble);
-      if (!$bubble) return;
       // calendar will jump anyway when pinning the current month,
       // so ignore smooth scroll setting and jump direct to week
+      const $bubble = document.querySelector(todayBubble);
+      if (!$bubble) return;
       scrollTo($bubble.offsetParent.offsetParent.offsetTop + 57, "auto");
       removeMutationListener(onTodayLoaded);
     },
     onTodayClicked = () => {
-      removeMutationListener(onTodayLoaded);
-      addMutationListener(todayBubble, onTodayLoaded);
+      // if calendar does not refresh: jump direct to current week
+      // if calendar does refresh: wait, then jump to current week
+      requestIdleCallback(() => {
+        onTodayLoaded();
+        addMutationListener(todayBubble, onTodayLoaded);
+      });
     },
     setup = () => {
-      if (document.contains($scroller)) return;
-      $scroller = document.querySelector(scroller);
-      $scroller?.removeEventListener("scroll", onPageScrolled);
-      $scroller?.addEventListener("scroll", onPageScrolled);
-      onPageScrolled();
-      if (jumpToWeek) {
-        $todayButton = document.querySelector(todayButton);
-        $todayButton?.removeEventListener("click", onTodayClicked);
-        $todayButton?.addEventListener("click", onTodayClicked);
+      if (!document.contains($scroller)) {
+        $scroller = document.querySelector(scroller);
+        $scroller?.removeEventListener("scroll", onPageScrolled);
+        $scroller?.addEventListener("scroll", onPageScrolled);
+        onPageScrolled();
+      }
+      if (jumpToWeek && !document.contains($today)) {
+        $today = document.querySelector(todayButton);
+        $today?.removeEventListener("click", onTodayClicked);
+        $today?.addEventListener("click", onTodayClicked);
       }
     };
   addMutationListener(scroller, setup, { subtree: false });
