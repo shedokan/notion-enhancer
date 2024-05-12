@@ -6,15 +6,15 @@
 
 let __$wrapper;
 const setupWrapper = () => {
-    const notionHelp = ".notion-help-button",
+    const notionAi = ".notion-ai-button",
       { html, addMutationListener } = globalThis.__enhancerApi,
       { removeMutationListener } = globalThis.__enhancerApi;
     return (__$wrapper ??= new Promise((res) => {
       const addToDom = () => {
-        const $help = document.querySelector(notionHelp);
-        if (!$help) return;
+        const $notionAi = document.querySelector(notionAi);
+        if (!$notionAi) return;
         const gap = 12,
-          computedStyles = getComputedStyle($help),
+          computedStyles = getComputedStyle($notionAi),
           visible = computedStyles.getPropertyValue("display") !== "none",
           width = computedStyles.getPropertyValue("width"),
           right = computedStyles.getPropertyValue("right"),
@@ -25,10 +25,10 @@ const setupWrapper = () => {
             style="right:${offset}px"
           ></div>`;
         removeMutationListener(addToDom);
-        $help.after($wrapper);
+        $notionAi.after($wrapper);
         res($wrapper);
       };
-      addMutationListener(notionHelp, addToDom);
+      addMutationListener(notionAi, addToDom);
       addToDom();
     }));
   },

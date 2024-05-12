@@ -206,9 +206,8 @@ function Panel({
     };
 
   const animationState = { ...closedWidth },
-    easing = "cubic-bezier(0.4, 0, 0.2, 1)",
     animate = ($target, keyframes) => {
-      const opts = { fill: "forwards", duration: transitionDuration, easing };
+      const opts = { fill: "forwards", duration: transitionDuration, easing: "ease" };
       $target.animate(keyframes, opts);
     },
     animatePanel = (to) => {
@@ -303,10 +302,10 @@ function Panel({
   // moves help button out of the way of open panel.
   // normally would place outside of an island, but in
   // this case is necessary for syncing up animations
-  const notionHelp = ".notion-help-button",
+  const notionAi = ".notion-ai-button",
     floatingButtons = ".notion-enhancer--floating-buttons",
     repositionCorner = async (offset) => {
-      const $help = document.querySelector(notionHelp),
+      const $help = document.querySelector(notionAi),
         $floating = document.querySelector(floatingButtons);
       offset ??= await getWidth();
       if (isNaN(offset)) offset = minWidth;
@@ -329,7 +328,7 @@ function Panel({
       }
       if ($help || $floating) removeMutationListener(repositionCorner);
     };
-  const corner = `${notionHelp}, ${floatingButtons}`;
+  const corner = `${notionAi}, ${floatingButtons}`;
   addMutationListener(corner, repositionCorner, { subtree: false });
 
   $panel.pin = () => {

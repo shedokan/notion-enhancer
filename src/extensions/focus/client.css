@@ -5,8 +5,9 @@
  * (https://notion-enhancer.github.io/) under the MIT license
  */
 
-/* hide topbar */
-.notion-sidebar-container[aria-hidden] ~ div .notion-topbar {
+/* hide topbar and ai */
+.notion-sidebar-container[aria-hidden] ~ div .notion-topbar,
+.notion-sidebar-container[aria-hidden] ~ div .notion-ai-button {
   opacity: 0 !important;
   transition: opacity 200ms ease-in-out !important;
 }
