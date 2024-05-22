@@ -1,0 +1,34 @@
+{
+  "name": "Line Numbers",
+  "id": "d61dc8a7-b195-465b-935f-53eea9efe74e",
+  "version": "0.5.0",
+  "description": "Adds line numbers to code blocks.",
+  "tags": ["code-line-numbers"],
+  "authors": [
+    {
+      "name": "dragonwocky",
+      "homepage": "https://dragonwocky.me/",
+      "avatar": "https://dragonwocky.me/avatar.jpg"
+    },
+    {
+      "name": "CloudHill",
+      "homepage": "https://github.com/CloudHill",
+      "avatar": "https://avatars.githubusercontent.com/u/54142180"
+    }
+  ],
+  "options": [
+    {
+      "type": "toggle",
+      "key": "numberSingleLines",
+      "description": "Add line numbers to code blocks with only one line.",
+      "value": true
+    },
+    {
+      "type": "select",
+      "key": "lineNumberDecoration",
+      "description": "Select a decoration style to distinguish line numbers from code block content.",
+      "values": ["Border", "Background", "None"]
+    }
+  ],
+  "clientScripts": ["client.mjs"]
+}

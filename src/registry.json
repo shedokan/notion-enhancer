@@ -6,6 +6,7 @@
   "extensions/scroller",
   "extensions/outliner",
   "extensions/word-counter",
+  "extensions/line-numbers",
   "extensions/no-peeking",
   "extensions/focus",
   "themes/classic-dark"

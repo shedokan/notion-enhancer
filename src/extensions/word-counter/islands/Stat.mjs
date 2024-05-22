@@ -1,10 +1,10 @@
 /**
- * notion-enhancer: word-counter
+ * notion-enhancer: word counter
  * (c) 2024 dragonwocky <thedragonring.bod@gmail.com> (https://dragonwocky.me/)
  * (https://notion-enhancer.github.io/) under the MIT license
  */
 
-function Stat({ unit, countable, ...props }, ...children) {
+function Stat({ unit, countable, ...props }) {
   const { html } = globalThis.__enhancerApi,
     $count = html`<b></b>`,
     $unit = html`<span></span>`,
