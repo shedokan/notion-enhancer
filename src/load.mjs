@@ -72,7 +72,8 @@ export default (async () => {
       Promise.resolve(isCore || API_LOADED)
         .then(() => import(enhancerUrl(`${mod._src}/${script}`)))
         .then((script) => script.default(globalThis.__enhancerApi, db))
-        .then(() => !isCore || globalThis.__enhancerApi.onReady?.());
+        .then(() => !isCore || globalThis.__enhancerApi.onReady?.())
+        .catch((err) => console.error(err));
     }
   }
 

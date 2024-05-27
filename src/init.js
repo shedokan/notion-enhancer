@@ -6,12 +6,13 @@
 
 "use strict";
 
-const isElectron = () => {
-  try {
-    return typeof module !== "undefined";
-  } catch {}
-  return false;
-};
+const coreId = "0f0bf8b6-eae6-4273-b307-8fc43f2ee082",
+  isElectron = () => {
+    try {
+      return typeof module !== "undefined";
+    } catch {}
+    return false;
+  };
 
 if (isElectron()) {
   require("./api/system.js");
@@ -38,8 +39,8 @@ if (isElectron()) {
 
         // register user-provided javascript for execution in-app
         if (target === ".webpack/renderer/tab_browser_view/preload.js") {
-          const { webFrame } = require("electron"),
-            db = await modDatabase("0f0bf8b6-eae6-4273-b307-8fc43f2ee082"),
+          const db = await modDatabase(coreId),
+            { webFrame } = require("electron"),
             customScript = (await db.get("customScript"))?.content;
           if (customScript) webFrame.executeJavaScript(customScript);
         }
@@ -52,8 +53,12 @@ if (isElectron()) {
       const db = await modDatabase(mod.id);
       for (let [scriptTarget, script] of mod.electronScripts ?? []) {
         if (target !== scriptTarget) continue;
-        script = require(`./${mod._src}/${script}`);
-        script(__getApi(), db, __exports, __eval);
+        try {
+          script = require(`./${mod._src}/${script}`);
+          script(__getApi(), db, __exports, __eval);
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
   };
