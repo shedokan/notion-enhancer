@@ -9,6 +9,9 @@ import { Tooltip } from "./Tooltip.mjs";
 import { TopbarButton } from "./TopbarButton.mjs";
 import { Select } from "../menu/islands/Select.mjs";
 
+const topbarId = "e0700ce3-a9ae-45f5-92e5-610ded0e348d",
+  coreId = "0f0bf8b6-eae6-4273-b307-8fc43f2ee082";
+
 // note: these islands are not reusable.
 // panel views can be added via addPanelView,
 // do not instantiate additional panels
@@ -135,8 +138,7 @@ function Panel({
       </aside>
     </div>`;
 
-  const topbarId = "e0700ce3-a9ae-45f5-92e5-610ded0e348d",
-    topbarFavorite = ".notion-topbar .notion-topbar-favorite-button",
+  const topbarFavorite = ".notion-topbar .notion-topbar-favorite-button",
     $topbarToggle = html`<${TopbarButton}
       aria-label="Toggle side panel"
       icon="panel-right"
@@ -207,7 +209,11 @@ function Panel({
 
   const animationState = { ...closedWidth },
     animate = ($target, keyframes) => {
-      const opts = { fill: "forwards", duration: transitionDuration, easing: "ease" };
+      const opts = {
+        fill: "forwards",
+        duration: transitionDuration,
+        easing: "ease",
+      };
       $target.animate(keyframes, opts);
     },
     animatePanel = (to) => {
@@ -278,12 +284,11 @@ function Panel({
   // hovering over the peek trigger will temporarily
   // pop out an interactive preview of the panel
   let _peekDebounce, _peekPanelOnHover;
-  const coreId = "0f0bf8b6-eae6-4273-b307-8fc43f2ee082",
-    $peekTrigger = html`<div
-      class="absolute z-10 right-0 h-[calc(100vh-120px)] bottom-[60px] w-[96px]
+  const $peekTrigger = html`<div
+    class="absolute z-10 right-0 h-[calc(100vh-120px)] bottom-[60px] w-[96px]
     group-[&[data-peeked]]/panel:(w-[calc(var(--panel--width,0)+8px)])
     group-[&[data-pinned]]/panel:(w-[calc(var(--panel--width,0)+8px)])"
-    ></div>`;
+  ></div>`;
   modDatabase(coreId).then(async (db) => {
     _peekPanelOnHover = await db.get("peekPanelOnHover");
     if (_peekPanelOnHover) $panel.prepend($peekTrigger);

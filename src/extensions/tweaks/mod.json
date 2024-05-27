@@ -59,9 +59,9 @@
     },
     {
       "type": "toggle",
-      "key": "normalisedTableScrolling",
-      "description": "Forces horizontally scrollable inline tables to respect the width and padding of a page when they overflow.",
-      "value": false
+      "key": "normalisedDatabaseScrolling",
+      "description": "Forces horizontally scrollable inline tables to respect the width and padding of a page when they overflow. Enabling this is recommended if you are using panel mods, otherwise databases may overflow.",
+      "value": true
     },
     {
       "type": "number",
@@ -130,5 +130,7 @@
       "description": "Changes the default horizontal alignment of images embedded within pages. Note that this replaces Notion's built-in central alignment, i.e. setting this to left or right will remove the option to centre images entirely.",
       "values": ["Centre", "Left", "Right"]
     }
-  ]
+  ],
+  "clientStyles": ["client.css"],
+  "clientScripts": ["client.mjs"]
 }

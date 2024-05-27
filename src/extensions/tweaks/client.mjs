@@ -1,56 +1,17 @@
 /**
  * notion-enhancer: tweaks
- * (c) 2021 dragonwocky <thedragonring.bod@gmail.com> (https://dragonwocky.me/)
+ * (c) 2024 dragonwocky <thedragonring.bod@gmail.com> (https://dragonwocky.me/)
  * (https://notion-enhancer.github.io/) under the MIT license
  */
 
-'use strict';
+const tweaksId = "5174a483-c88d-4bf8-a95f-35cd330b76e2";
+export default async (api, db) => {
+  const { getMods } = api,
+    [{ options }] = await getMods((mod) => mod.id === tweaksId),
+    tweaks = options.filter((opt) => opt.key).map((opt) => opt.key);
 
-export default async function ({ web }, db) {
-  const cssInsert = await db.get(['insert.css']);
-  if (cssInsert?.filename) {
-    document.head.append(
-      web.html`<style id="enhancer--tweak-${cssInsert.filename}">${cssInsert.content}</style>`
-    );
-  }
-
-  const responsiveBreakpointPx = +(await db.get(['tweak.responsive_breakpoint_px'])),
-    responsiveBreakpointPercent =
-      screen.width * 0.01 * (await db.get(['tweak.responsive_breakpoint_percent'])),
-    addResponsiveBreakpoint = () => {
-      document.body.classList.remove('enhancer--tweak-responsive_breakpoint');
-      if (
-        window.innerWidth <= responsiveBreakpointPx ||
-        window.innerWidth <= responsiveBreakpointPercent
-      ) {
-        document.body.classList.add('enhancer--tweak-responsive_breakpoint');
-      }
-    };
-  addEventListener('resize', addResponsiveBreakpoint);
-  addResponsiveBreakpoint();
-
-  const tweaks = [
-    'full_width_pages',
-    'normalise_table_scroll',
-    'hide_help',
-    'hide_slash_for_commands',
-    'hide_default_page_icons',
-    'snappy_transitions',
-    'thicker_bold',
-    'spaced_lines',
-    'condensed_bullets',
-    'bracketed_links',
-    'accented_links',
-    'quotation_marks',
-  ];
-  for (const tweak of tweaks) {
-    if (await db.get([`tweak.${tweak}`])) {
-      document.body.classList.add(`enhancer--tweak-${tweak}`);
-    }
-  }
-
-  const imgAlignment = await db.get(['tweak.img_alignment']);
-  if (imgAlignment !== 'center') {
-    document.body.classList.add(`enhancer--tweak-img_alignment-${imgAlignment}`);
-  }
-}
+  // inc. leading & trailing comma for selectors (see client.css)
+  let enabled = ",";
+  for (const tweak of tweaks) if (await db.get(tweak)) enabled += tweak + ",";
+  document.body.dataset.tweaks = enabled;
+};
