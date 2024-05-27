@@ -5,11 +5,14 @@
  * (https://notion-enhancer.github.io/) under the MIT license
  */
 
-function LineNumber({ number, height, ...props }) {
+function LineNumbers() {
   const { html } = globalThis.__enhancerApi;
-  return html`<span class="block text-right" style="height:${height}px">
-    ${number}
-  </span>`;
+  return html`<div
+    class="notion-enhancer--line-numbers flex-grow
+    text-([85%] [var(--theme--fg-secondary)] right)
+    font-[var(--font--code)] pt-[34px] pb-[32px]
+    overflow-hidden"
+  ></div>`;
 }
 
 export default async (api, db) => {
@@ -17,61 +20,75 @@ export default async (api, db) => {
     numberSingleLines = await db.get("numberSingleLines"),
     lineNumberDecoration = await db.get("lineNumberDecoration"),
     lineNumbersClass = "notion-enhancer--line-numbers",
-    codeBlockSelector = ".notion-code-block.line-numbers";
+    codeBlockSelector = ".notion-code-block.line-numbers > .notranslate";
+
+  // get character width in pixels
+  const getCharWidth = ($elem) => {
+      const $char = html`<span style="width:1ch"> </span>`;
+      $elem.append($char);
+      const charWidth = getComputedStyle($char).getPropertyValue("width");
+      $char.remove();
+      return parseFloat(charWidth);
+    },
+    // get line width in pixels
+    getLineWidth = ($elem) =>
+      parseFloat(getComputedStyle($elem).getPropertyValue("width")) -
+      parseFloat(getComputedStyle($elem).getPropertyValue("padding-left")) -
+      parseFloat(getComputedStyle($elem).getPropertyValue("padding-right")),
+    // get line height in pixels
+    getLineHeight = ($elem) =>
+      parseFloat(getComputedStyle($elem).getPropertyValue("line-height")),
+    // update inline styles without unnecessary dom updates
+    applyStyles = ($elem, styles) => {
+      for (const property in styles) {
+        if ($elem.style[property] === styles[property]) continue;
+        $elem.style[property] = styles[property];
+      }
+    };
 
   const numberLines = () => {
-    for (const $block of document.querySelectorAll(codeBlockSelector)) {
-      const $code = $block.lastElementChild,
-        computedStyles = getComputedStyle($code);
-
+    for (const $code of document.querySelectorAll(codeBlockSelector)) {
       const wrap = $code.style.wordBreak === "break-all",
         lines = $code.innerText.split("\n"),
         lineCount = Math.max(lines.length - 1, 1),
         lineNumDigits = (Math.log(lineCount) * Math.LOG10E + 1) | 0;
 
-      const update =
-        parseInt($block.dataset.lines) !== lineCount ||
-        $block.dataset.wrap !== String(wrap);
-      if (!update) continue;
-      $block.dataset.lines = lineCount;
-      $block.dataset.wrap = wrap;
+      const doUpdate =
+        $code.dataset.lines !== String(lineCount) ||
+        $code.dataset.wrap !== String(wrap);
+      if (!doUpdate) continue;
+      $code.dataset.lines = lineCount;
+      $code.dataset.wrap = wrap;
 
       // shrink block to allow space for numbers
-      $block.style.justifyContent = "flex-end";
-      $code.style.minWidth = `calc(100% - 32px - ${lineNumDigits}ch)`;
-      $code.style.maxWidth = $code.style.minWidth;
-
-      // get 1ch in pixels
-      const $tmp = html`<span style="width:1ch"> </span>`;
-      $code.append($tmp);
-      const charWidth = getComputedStyle($tmp).getPropertyValue("width");
-      $tmp.remove();
+      const width = `calc(100% - 32px - ${lineNumDigits}ch)`;
+      applyStyles($code.parentElement, { justifyContent: "flex-end" });
+      applyStyles($code, { minWidth: width, maxWidth: width });
 
       // work out height of wrapped lines
-      const lineWidth =
-          parseFloat(computedStyles.getPropertyValue("width")) -
-          parseFloat(computedStyles.getPropertyValue("padding-left")) -
-          parseFloat(computedStyles.getPropertyValue("padding-right")),
-        charsPerLine = Math.floor(lineWidth / parseFloat(charWidth)),
-        lineHeight = parseFloat(computedStyles.getPropertyValue("line-height"));
+      const lineHeight = getLineHeight($code),
+        charsPerLine = Math.floor(getLineWidth($code) / getCharWidth($code));
 
-      const $numbers = html`<div
-        class="${lineNumbersClass} font-[var(--font--code)] flex-grow
-          text-([85%] [var(--theme--fg-secondary)] right) pt-[34px] pb-[32px]"
-      ></div>`;
+      // update line numbers in dom
+      let totalHeight = 34;
+      $code._$lineNumbers ||= LineNumbers();
       for (let i = 1; i <= lineCount; i++) {
-        let lineSpan = 1;
-        if (wrap) lineSpan = Math.ceil(lines[i - 1].length / charsPerLine);
-        $numbers.append(
-          html`<${LineNumber}
-            number=${i}
-            height=${(lineSpan || 1) * lineHeight}
-          />`
-        );
+        let $n = $code._$lineNumbers.children[i - 1];
+        if (!$n) {
+          $n = html`<span class="block text-right">${i}</span>`;
+          $code._$lineNumbers.append($n);
+        }
+        const height =
+          wrap && lines[i - 1].length > charsPerLine
+            ? Math.ceil(lines[i - 1].length / charsPerLine) * lineHeight
+            : lineHeight;
+        applyStyles($n, { height: `${height}px` });
+        totalHeight += height;
       }
+      applyStyles($code._$lineNumbers, { height: `${totalHeight}px` });
 
-      const $prev = $block.getElementsByClassName(lineNumbersClass)[0];
-      $prev ? $prev.replaceWith($numbers) : $block.prepend($numbers);
+      if (!document.contains($code._$lineNumbers))
+        $code.before($code._$lineNumbers);
     }
   };
 
