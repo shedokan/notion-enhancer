@@ -8,10 +8,11 @@
 export default async (api) => {
   const { addMutationListener } = api,
     pageContentSelector = `
-      :is(.notion-page-content >
+      :is([placeholder="Untitled"],
+      .notion-page-content >
         div[data-block-id]:not(.notion-column_list-block):not(.notion-collection_view_page-block),
       .notion-page-content .notion-table_of_contents-block a,
-      [placeholder="Untitled"],
+      .notion-page-view-discussion [data-content-editable-leaf],
       .notion-column-block > div[data-block-id],
       .notion-collection_view-block,
       .notion-table-view,
