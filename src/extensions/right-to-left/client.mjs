@@ -20,11 +20,8 @@ export default async (api) => {
         .notion-toggle-block [placeholder="Toggle"],
         .notion-table_of_contents-block a),
       .notion-page-view-discussion [data-content-editable-leaf],
-      .notion-column-block > div[data-block-id],
-      .notion-collection_view-block,
-      .notion-table-view,
-      .notion-board-view,
-      .notion-gallery-view):not([dir])`,
+      .notion-table-view-header-cell, .notion-table-view-cell,
+      .notion-board-view, .notion-gallery-view):not([dir])`,
     listItemSelector = `:is(div[placeholder="List"], div[placeholder="To-do"],
       div[placeholder="Toggle"]):not([style*="text-align: start"])`,
     inlineEquationSelector =
