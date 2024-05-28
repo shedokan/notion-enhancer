@@ -43,8 +43,8 @@ export default async (api, db) => {
   const updateStats = debounce(() => {
     if (!document.contains($page)) $page = document.querySelector(page);
     if (!$page) return;
-    const text = $page.innerText,
-      words = text.split(/[^\w]+/).length,
+    const text = $page.innerText.trim(),
+      words = text.length ? text.split(/\s+/).length : 0,
       sentences = text.split(".").filter((s) => s.trim()).length,
       blocks = $page.querySelectorAll("[data-block-id]").length;
     $wordCount.setCount(words);
