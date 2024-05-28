@@ -9,9 +9,16 @@ export default async (api) => {
   const { addMutationListener } = api,
     pageContentSelector = `
       :is([placeholder="Untitled"],
-      .notion-page-content >
-        div[data-block-id]:not(.notion-column_list-block):not(.notion-collection_view_page-block),
-      .notion-page-content .notion-table_of_contents-block a,
+      .notion-page-content :is(
+        div[data-block-id]:not(.notion-column_list-block,
+          .notion-collection_view_page-block, .notion-header-block,
+          .notion-sub_header-block, .notion-sub_sub_header-block
+          .notion-toggle-block, .notion-table_of_contents-block),
+        .notion-header-block [placeholder="Heading 1"],
+        .notion-sub_header-block [placeholder="Heading 2"],
+        .notion-sub_sub_header-block [placeholder="Heading 3"],
+        .notion-toggle-block [placeholder="Toggle"],
+        .notion-table_of_contents-block a),
       .notion-page-view-discussion [data-content-editable-leaf],
       .notion-column-block > div[data-block-id],
       .notion-collection_view-block,
