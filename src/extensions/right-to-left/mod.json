@@ -1,23 +1,21 @@
 {
-  "name": "right to left",
-  "id": "b28ee2b9-4d34-4e36-be8a-ab5be3d79f51",
+  "name": "Right To Left",
   "version": "1.5.0",
-  "description": "enables auto rtl/ltr text direction detection.",
-  "preview": "right-to-left.jpg",
-  "tags": ["extension", "usability"],
+  "id": "b28ee2b9-4d34-4e36-be8a-ab5be3d79f51",
+  "description": "Enables automatic writing direction detection for languages that read right-to-left.",
+  "tags": ["rtl", "language-support"],
   "authors": [
     {
+      "name": "dragonwocky",
+      "homepage": "https://dragonwocky.me/",
+      "avatar": "https://dragonwocky.me/avatar.jpg"
+    },
+    {
       "name": "obahareth",
-      "email": "omar@omar.engineer",
       "homepage": "https://omar.engineer",
       "avatar": "https://avatars.githubusercontent.com/u/3428118"
     }
   ],
-  "js": {
-    "client": ["client.mjs"]
-  },
-  "css": {
-    "client": ["client.css"]
-  },
-  "options": []
+  "clientStyles": ["client.css"],
+  "clientScripts": ["client.mjs"]
 }
