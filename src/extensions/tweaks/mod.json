@@ -27,21 +27,14 @@
     },
     {
       "type": "toggle",
-      "label": "Hide Notion AI",
-      "key": "hideNotionAI",
-      "description": "Hide the 'Ask AI' and 'Write ... with AI' prompts.",
+      "key": "hidePlaceholders",
+      "description": "Hides the text shown when an empty block is waiting to be filled in, e.g. \"Write something, or press 'space' for AI, '/' for commands...\"",
       "value": false
     },
     {
       "type": "toggle",
       "key": "hideDefaultIcons",
       "description": "Hide the default <i class='i-file -mb-px'></i> page icons.",
-      "value": false
-    },
-    {
-      "type": "toggle",
-      "key": "hoverableTimelineTitles",
-      "description": "Shows the full title of a timeline item on hover if it has been truncated for being too long.",
       "value": false
     },
     {

@@ -7,30 +7,51 @@
  */
 
 /* interface */
-body[data-tweaks*=",hideFloatingButton,"] {
-  .notion-help-button,
-  .notion-ai-button {
+
+body[data-tweaks*=",hideFloatingButton,"]
+  :is(.notion-help-button, .notion-ai-button) {
+  display: none !important;
+}
+
+body[data-tweaks*=",hideSlashMenu,"]
+  .notion-default-overlay-container
+  [role="dialog"][style*="max-width: calc(-24px + 100vw);box-shadow"] {
+  box-shadow: none !important;
+  [role="menu"][aria-activedescendant] {
     display: none !important;
   }
 }
 
+body[data-tweaks*=",hidePlaceholders,"] [contenteditable]:empty:after {
+  content: "" !important;
+}
+
+body[data-tweaks*=",hideDefaultIcons,"]
+  div
+  :has(> .notion-record-icon svg.page) {
+  display: none !important;
+}
+
+body[data-tweaks*=",snappyTransitions,"] * {
+  animation-duration: 0s !important;
+  transition-duration: 0s !important;
+}
+
 /* pages */
 
-body[data-tweaks*=",normalisedDatabaseScrolling,"] {
-  .notion-page-content {
-    .notion-collection_view-block {
-      width: 100% !important;
-    }
-    .notion-board-view {
-      margin-left: 0 !important;
-      margin-right: 0 !important;
-    }
-    :is(.notion-collection_view-block, .notion-collection-view-body)
-      > [style*="padding"] {
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-      min-width: auto !important;
-    }
+body[data-tweaks*=",normalisedDatabaseScrolling,"] .notion-page-content {
+  .notion-collection_view-block {
+    width: 100% !important;
+  }
+  .notion-board-view {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  :is(.notion-collection_view-block, .notion-collection-view-body)
+    > [style*="padding"] {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    min-width: auto !important;
   }
 }
 
@@ -51,18 +72,6 @@ body[data-tweaks*=",normalisedDatabaseScrolling,"] {
 .enhancer--tweak-full_width_pages .notion-app-inner {
   --theme--page-width: 100%;
   --theme--page-padding: calc(48px + env(safe-area-inset-left));
-}
-
-.enhancer--tweak-snappy_transitions * {
-  animation-duration: 0s !important;
-  transition-duration: 0s !important;
-}
-.enhancer--tweak-snappy_transitions .notion-selectable-halo {
-  opacity: 1 !important;
-}
-
-.enhancer--tweak-hide_slash_for_commands [contenteditable]:empty:after {
-  content: " " !important;
 }
 
 .enhancer--tweak-hide_default_page_icons

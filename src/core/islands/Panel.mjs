@@ -9,8 +9,9 @@ import { Tooltip } from "./Tooltip.mjs";
 import { TopbarButton } from "./TopbarButton.mjs";
 import { Select } from "../menu/islands/Select.mjs";
 
-const topbarId = "e0700ce3-a9ae-45f5-92e5-610ded0e348d",
-  coreId = "0f0bf8b6-eae6-4273-b307-8fc43f2ee082";
+const coreId = "0f0bf8b6-eae6-4273-b307-8fc43f2ee082",
+  topbarId = "e0700ce3-a9ae-45f5-92e5-610ded0e348d",
+  tweaksId = "5174a483-c88d-4bf8-a95f-35cd330b76e2";
 
 // note: these islands are not reusable.
 // panel views can be added via addPanelView,
@@ -222,6 +223,13 @@ function Panel({
       animate($panel.lastElementChild, [animationState, to]);
       Object.assign(animationState, to);
     };
+
+  isEnabled(tweaksId).then(async (tweaksEnabled) => {
+    if (!tweaksEnabled) return;
+    const tweaksDatabase = await modDatabase(tweaksId),
+      snappyTransitions = await tweaksDatabase.get("snappyTransitions");
+    if (snappyTransitions) transitionDuration = 0;
+  });
 
   // dragging the resize handle horizontally will
   // adjust the width of the panel correspondingly
