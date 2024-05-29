@@ -8,7 +8,6 @@ import { checkForUpdate } from "./updateCheck.mjs";
 import { sendTelemetryPing } from "./sendTelemetry.mjs";
 import { Modal, Frame } from "./islands/Modal.mjs";
 import { MenuButton } from "./islands/MenuButton.mjs";
-import { TopbarButton } from "./islands/TopbarButton.mjs";
 import { Tooltip } from "./islands/Tooltip.mjs";
 import { Panel } from "./islands/Panel.mjs";
 

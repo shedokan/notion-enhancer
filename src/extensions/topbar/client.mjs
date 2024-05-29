@@ -106,7 +106,7 @@ export default async function (api, db) {
 
   const alwaysOnTopButton = await db.get("alwaysOnTopButton");
   if (alwaysOnTopButton === "Disabled") return;
-  const topbarFavorite = `.notion-topbar ${favoriteSelector}`,
+  const notionTopbar = ".notion-topbar",
     pinIcon = await db.get("pinIcon"),
     unpinIcon = await db.get("unpinIcon"),
     $pin = html`<${TopbarButton}
@@ -135,11 +135,11 @@ export default async function (api, db) {
       icon="pin-off"
     />`,
     addToTopbar = () => {
-      if (document.contains($pin)) removeMutationListener(addToTopbar);
-      document.querySelector(topbarFavorite)?.after($pin, $unpin);
+      if (document.contains($pin)) return;
+      document.querySelector(favoriteSelector)?.after($pin, $unpin);
     };
   html`<${Tooltip}><b>${pinTooltip}</b><//>`.attach($pin, "bottom");
   html`<${Tooltip}><b>${unpinTooltip}</b><//>`.attach($unpin, "bottom");
-  addMutationListener(topbarFavorite, addToTopbar);
-  addToTopbar(topbarFavorite);
+  addMutationListener(notionTopbar, addToTopbar, { subtree: false });
+  addToTopbar();
 }

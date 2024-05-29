@@ -138,17 +138,18 @@ function Panel({
       </aside>
     </div>`;
 
-  const topbarFavorite = ".notion-topbar .notion-topbar-favorite-button",
+  const notionTopbar = ".notion-topbar",
+    topbarFavorite = ".notion-topbar-favorite-button",
     $topbarToggle = html`<${TopbarButton}
       aria-label="Toggle side panel"
       icon="panel-right"
     />`,
     addToTopbar = () => {
-      if (document.contains($topbarToggle)) removeMutationListener(addToTopbar);
+      if (document.contains($topbarToggle)) return;
       document.querySelector(topbarFavorite)?.after($topbarToggle);
     };
   $panelToggle.onclick = $topbarToggle.onclick = () => $panel.toggle();
-  addMutationListener(topbarFavorite, addToTopbar);
+  addMutationListener(notionTopbar, addToTopbar, { subtree: false });
   addToTopbar();
 
   isEnabled(topbarId).then(async (topbarEnabled) => {
