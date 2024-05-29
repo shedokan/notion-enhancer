@@ -7,6 +7,12 @@
  */
 
 /* interface */
+body[data-tweaks*=",hideFloatingButton,"] {
+  .notion-help-button,
+  .notion-ai-button {
+    display: none !important;
+  }
+}
 
 /* pages */
 
@@ -53,10 +59,6 @@ body[data-tweaks*=",normalisedDatabaseScrolling,"] {
 }
 .enhancer--tweak-snappy_transitions .notion-selectable-halo {
   opacity: 1 !important;
-}
-
-.enhancer--tweak-hide_help .notion-help-button {
-  display: none !important;
 }
 
 .enhancer--tweak-hide_slash_for_commands [contenteditable]:empty:after {

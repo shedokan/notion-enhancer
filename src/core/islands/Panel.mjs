@@ -304,10 +304,10 @@ function Panel({
     }, 100);
   });
 
-  // moves help button out of the way of open panel.
+  // moves ai/q&a button out of the way of open panel.
   // normally would place outside of an island, but in
   // this case is necessary for syncing up animations
-  const notionAi = ".notion-ai-button",
+  const notionAi = ".notion-help-button, .notion-ai-button",
     floatingButtons = ".notion-enhancer--floating-buttons",
     repositionCorner = async (offset) => {
       const $help = document.querySelector(notionAi),

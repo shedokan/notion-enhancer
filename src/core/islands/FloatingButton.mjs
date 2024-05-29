@@ -6,7 +6,7 @@
 
 let __$wrapper;
 const setupWrapper = () => {
-    const notionAi = ".notion-ai-button",
+    const notionAi = ".notion-help-button, .notion-ai-button",
       { html, addMutationListener } = globalThis.__enhancerApi,
       { removeMutationListener } = globalThis.__enhancerApi;
     return (__$wrapper ??= new Promise((res) => {

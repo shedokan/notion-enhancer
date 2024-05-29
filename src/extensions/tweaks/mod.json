@@ -15,8 +15,8 @@
     { "type": "heading", "label": "Interface" },
     {
       "type": "toggle",
-      "key": "hideHelp",
-      "description": "Hide the help button floating at the bottom right of the interface.",
+      "key": "hideFloatingButton",
+      "description": "Hide the Q&A/Ask AI/Help button floating at the bottom right of the interface.",
       "value": false
     },
     {

@@ -27,7 +27,7 @@
     {
       "type": "toggle",
       "key": "showScrollToBottom",
-      "description": "Adds a button to the bottom right corner of the screen (beside the help button) to jump directly to the bottom of a page.",
+      "description": "Adds a button to the bottom right corner of the screen to jump directly to the bottom of a page.",
       "value": false
     },
     {
