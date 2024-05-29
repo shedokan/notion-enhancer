@@ -57,6 +57,12 @@
       "value": true
     },
     {
+      "type": "toggle",
+      "key": "hidePageDiscussions",
+      "description": "Hide the comments section at the top of pages within databases.",
+      "value": false
+    },
+    {
       "type": "number",
       "key": "responsiveColumnsBreakpoint",
       "description": "The width of the window below which in-page columns are made full width to avoid squishing column contents.",
@@ -68,12 +74,6 @@
       "description": "The unit to measure the above width in, e.g. you may wish the button to appear when the window occupies <= 20% of the screen or is less than a certain number of pixels wide.",
       "values": ["Pixels", "Percent"]
     },
-    {
-      "type": "toggle",
-      "key": "hidePageDiscussions",
-      "description": "Hide the comments section at the top of pages within databases.",
-      "value": false
-    },
     { "type": "heading", "label": "Typography" },
     {
       "type": "toggle",
@@ -83,8 +83,8 @@
     },
     {
       "type": "toggle",
-      "key": "condensedBulletedLists",
-      "description": "Tightened line spacing between bulleted list items.",
+      "key": "condensedLists",
+      "description": "Tightened line spacing between bulleted and numbered list items.",
       "value": false
     },
     {
