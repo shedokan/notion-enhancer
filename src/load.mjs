@@ -16,11 +16,19 @@ export default (async () => {
     IS_MENU = location.href.startsWith(enhancerUrl("core/menu/index.html")),
     IS_TABS = /\.webpack\/renderer\/tabs\/index.html$/.test(location.href),
     IS_ELECTRON = ['linux', 'win32', 'darwin'].includes(platform),
-    API_LOADED = new Promise((res, rej) => {
+    CORE_LOADED = new Promise((res, rej) => {
+      const onLoad = globalThis.__enhancerApi.onLoad;
+      globalThis.__enhancerApi.onLoad = () => (onLoad?.(), res());
+    }),
+    MODS_LOADED = new Promise((res, rej) => {
       const onReady = globalThis.__enhancerApi.onReady;
       globalThis.__enhancerApi.onReady = () => (onReady?.(), res());
     });
-  globalThis.IS_TABS = IS_TABS;
+  Object.assign((globalThis.__enhancerApi ??= {}), {
+    CORE_LOADED,
+    MODS_LOADED,
+    IS_TABS,
+  });
 
   if (!IS_MENU && !IS_TABS) {
     if (!signedIn || !pageLoaded) return;
@@ -69,16 +77,19 @@ export default (async () => {
     for (let script of mod.clientScripts ?? []) {
       // execute mod scripts after core has
       // loaded and api is ready to use
-      Promise.resolve(isCore || API_LOADED)
+      Promise.resolve(isCore || CORE_LOADED)
         .then(() => import(enhancerUrl(`${mod._src}/${script}`)))
         .then((script) => script.default(globalThis.__enhancerApi, db))
-        .then(() => !isCore || globalThis.__enhancerApi.onReady?.())
+        .then(() => !isCore || globalThis.__enhancerApi.onLoad?.())
         .catch((err) => console.error(err));
     }
   }
 
-  if (IS_MENU || IS_TABS) globalThis.__enhancerApi.onReady?.();
-  return API_LOADED.then(() => {
+  if (IS_MENU || IS_TABS) {
+    globalThis.__enhancerApi.onLoad?.();
+    globalThis.__enhancerApi.onReady?.();
+  }
+  return CORE_LOADED.then(() => {
     if (IS_MENU) console.log("notion-enhancer: ready");
     return globalThis.__enhancerApi;
   });

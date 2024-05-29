@@ -89,7 +89,7 @@ function Panel({
   transitionDuration = 300,
 }) {
   const { modDatabase, isEnabled } = globalThis.__enhancerApi,
-    { html, useState, addKeyListener } = globalThis.__enhancerApi,
+    { html, useState, addKeyListener, MODS_LOADED } = globalThis.__enhancerApi,
     { addMutationListener, removeMutationListener } = globalThis.__enhancerApi,
     $panelToggle = html`<button
       aria-label="Toggle side panel"
@@ -335,6 +335,7 @@ function Panel({
     };
   const corner = `${notionAi}, ${floatingButtons}`;
   addMutationListener(corner, repositionCorner, { subtree: false });
+  MODS_LOADED.then(() => repositionCorner());
 
   $panel.pin = () => {
     if (isPinned() || !panelViews.length) return;

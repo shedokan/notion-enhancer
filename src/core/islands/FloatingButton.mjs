@@ -13,17 +13,10 @@ const setupWrapper = () => {
       const addToDom = () => {
         const $notionAi = document.querySelector(notionAi);
         if (!$notionAi) return;
-        const gap = 12,
-          computedStyles = getComputedStyle($notionAi),
-          visible = computedStyles.getPropertyValue("display") !== "none",
-          width = computedStyles.getPropertyValue("width"),
-          right = computedStyles.getPropertyValue("right"),
-          offset = visible ? parseInt(width) + parseInt(right) + gap : 26,
-          $wrapper = html`<div
-            class="notion-enhancer--floating-buttons z-50 gap-[${gap}px]
-            flex absolute bottom-[calc(26px+env(safe-area-inset-bottom))]"
-            style="right:${offset}px"
-          ></div>`;
+        const $wrapper = html`<div
+          class="notion-enhancer--floating-buttons z-50 gap-[12px]
+          flex absolute bottom-[calc(26px+env(safe-area-inset-bottom))]"
+        ></div>`;
         removeMutationListener(addToDom);
         $notionAi.after($wrapper);
         res($wrapper);
@@ -35,6 +28,7 @@ const setupWrapper = () => {
   addFloatingButton = async ($btn) => {
     if (document.contains($btn)) return;
     (await setupWrapper()).prepend($btn);
+    // button positioning is calculated by panel
   },
   removeFloatingButton = ($btn) => $btn.remove();
 
