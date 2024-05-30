@@ -31,6 +31,12 @@ body[data-tweaks*=",hideDefaultIcons,"]
   display: none !important;
 }
 
+body[data-tweaks*=",disableSidebarResizing,"]
+  .notion-sidebar
+  [style*="cursor: col-resize;"] {
+  pointer-events: none !important;
+}
+
 body[data-tweaks*=",snappyTransitions,"] * {
   animation-duration: 0s !important;
   transition-duration: 0s !important;
@@ -38,6 +44,7 @@ body[data-tweaks*=",snappyTransitions,"] * {
 
 /* pages */
 
+body[data-break-columns],
 body[data-tweaks*=",fullWidthPages,"]
   .layout:has(.notion-page-block):not(.layout-center-peek, .layout-side-peek) {
   --content-width: 100% !important;
@@ -59,21 +66,15 @@ body[data-tweaks*=",normalisedDatabaseScrolling,"] .notion-page-content {
   }
 }
 
-.enhancer--tweak-responsive_breakpoint
+body[data-break-columns]
   .notion-column_list-block
-  [style="display: flex;"]
-  > div {
-  width: 100% !important;
-}
-.enhancer--tweak-responsive_breakpoint
-  .notion-column_list-block
-  [style="display: flex;"] {
+  [style*="display: flex;"]:has(.notion-block-resizer) {
   flex-direction: column !important;
-}
-.enhancer--tweak-responsive_breakpoint .notion-app-inner,
-.enhancer--tweak-full_width_pages .notion-app-inner {
-  --theme--page-width: 100%;
-  --theme--page-padding: calc(48px + env(safe-area-inset-left));
+  > div {
+    width: 100% !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
 }
 
 body[data-tweaks*=",hidePageDiscussions,"]
@@ -159,19 +160,19 @@ body[data-tweaks*=",quoteBlockQuotationMarks,"] .notion-quote-block {
   }
 }
 
-body[data-tweaks*=",compactCodeBlocks,"]
-  .notion-code-block.line-numbers
+body[data-tweaks*=",compactCodeBlocks,"] .notion-code-block.line-numbers {
+  .notion-enhancer--line-numbers {
+    margin-top: 28px !important;
+  }
   > [data-content-editable-leaf] {
-  padding: 28px 22px 22px 22px !important;
+    padding: 28px 22px 22px 22px !important;
+  }
 }
-
-body[data-tweaks*=",defaultImageAlignment,"] {
-  /**/
-}
-
-.enhancer--tweak-img_alignment-left .notion-image-block {
+body[data-tweaks*=",defaultImageAlignment=Left,"]
+  .notion-image-block[style*="align-self: center"] {
   align-self: start !important;
 }
-.enhancer--tweak-img_alignment-right .notion-image-block {
+body[data-tweaks*=",defaultImageAlignment=Right,"]
+  .notion-image-block[style*="align-self: center"] {
   align-self: end !important;
 }

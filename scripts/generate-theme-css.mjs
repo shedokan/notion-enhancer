@@ -885,7 +885,6 @@ styleTooltips();
 styleAccents();
 styleScrollbars();
 styleCode();
-cssBody += `.notion-emoji{display:inline-block!important}`;
 
 console.log(
   `body${modeSelector} { ${cssRoot} } ${Object.entries(cssRefs)

@@ -267,9 +267,11 @@ const iconPattern = /^i-((?:\w|-)+)(?:\?(mask|bg|auto))?$/,
 let _renderedTokens = -1;
 const _tokens = new Set(),
   _stylesheet = html`<style id="__unocss"></style>`,
+  preflight = `[un-cloak]{display:none!important}
+  .notion-emoji{display:inline-block!important}`,
   uno = createGenerator({
     presets: [presetUno()],
-    preflights: [{ getCSS: () => `[un-cloak]{display:none!important}` }],
+    preflights: [{ getCSS: () => preflight }],
     rules: [[iconPattern, presetIcons, { layer: "icons" }]],
     layers: { preflights: -2, icons: -1, default: 1 },
   }),

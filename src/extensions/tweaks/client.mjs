@@ -8,16 +8,38 @@ const tweaksId = "5174a483-c88d-4bf8-a95f-35cd330b76e2";
 export default async (api, db) => {
   const { getMods, addKeyListener } = api,
     [{ options }] = await getMods((mod) => mod.id === tweaksId),
-    tweaks = options
-      .filter((opt) => opt.type === "toggle")
-      .map((opt) => opt.key),
-    enabled = {};
-  for (const tweak of tweaks) enabled[tweak] = await db.get(tweak);
+    tweaks = options.filter((opt) => opt.key).map((opt) => opt.key),
+    values = {};
+  for (const tweak of tweaks) values[tweak] = await db.get(tweak);
 
   // inc. leading & trailing comma for selectors (see client.css)
   document.body.dataset.tweaks =
-    "," + tweaks.filter((tweak) => enabled[tweak]).join(",") + ",";
+    "," +
+    tweaks
+      .filter((tweak) => values[tweak])
+      .map((tweak) => {
+        if (typeof values[tweak] === "boolean") return tweak;
+        return tweak + "=" + values[tweak];
+      })
+      .join(",") +
+    ",";
 
-  if (enabled["hideSlashMenu"])
+  if (values["hideSlashMenu"]) {
     addKeyListener("/", () => document.body.click(), true);
+  }
+
+  if (values["responsiveColumnsBreakpoint"] > 0) {
+    const addResponsiveBreakpoint = () => {
+      let breakpoint = values["responsiveColumnsBreakpoint"];
+      if (values["responsiveColumnsUnit"] === "Percent") {
+        breakpoint /= 100;
+        breakpoint *= screen.availWidth;
+      }
+      if (window.innerWidth <= breakpoint) {
+        document.body.setAttribute("data-break-columns", true);
+      } else document.body.removeAttribute("data-break-columns");
+    };
+    window.addEventListener("resize", addResponsiveBreakpoint);
+    addResponsiveBreakpoint();
+  }
 };

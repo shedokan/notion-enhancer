@@ -39,6 +39,12 @@
     },
     {
       "type": "toggle",
+      "key": "disableSidebarResizing",
+      "description": "Prevents interaction with the left sidebar's drag handle, effectively freezing it at it's current size.",
+      "value": false
+    },
+    {
+      "type": "toggle",
       "key": "snappyTransitions",
       "description": "Disables style animations for a snappier experience across the board. This will not affect JavaScript-powered animations, e.g. the left sidebar popping out.",
       "value": false
