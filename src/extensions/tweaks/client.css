@@ -42,6 +42,30 @@ body[data-tweaks*=",snappyTransitions,"] * {
   transition-duration: 0s !important;
 }
 
+body[data-tweaks*=",tabStyle=Rounded,"] > #root .hide-scrollbar {
+  padding-top: 4px;
+  > [draggable] {
+    overflow: hidden;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+    [style*="height: 36px"] {
+      top: -2px !important;
+    }
+  }
+}
+
+body[data-tweaks*=",tabStyle=Bubble,"] > #root .hide-scrollbar {
+  padding-top: 3px;
+  height: 30px !important;
+  > [draggable] {
+    overflow: hidden;
+    border-radius: 5px;
+    [style*="height: 36px"] {
+      top: -4px !important;
+    }
+  }
+}
+
 /* pages */
 
 body[data-break-columns],

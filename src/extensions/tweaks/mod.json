@@ -49,6 +49,13 @@
       "description": "Disables style animations for a snappier experience across the board. This will not affect JavaScript-powered animations, e.g. the left sidebar popping out.",
       "value": false
     },
+    {
+      "type": "select",
+      "key": "tabStyle",
+      "description": "Changes the shape of open tab controls to look like Chrome or Firefox's rounded tabs.",
+      "platforms": ["linux", "win32", "darwin"],
+      "values": ["Rectangular", "Rounded", "Bubble"]
+    },
     { "type": "heading", "label": "Pages" },
     {
       "type": "toggle",
@@ -131,5 +138,6 @@
     }
   ],
   "clientStyles": ["client.css"],
-  "clientScripts": ["client.mjs"]
+  "clientScripts": ["client.mjs"],
+  "electronScripts": [[".webpack/renderer/tabs/preload.js", "tabs.cjs"]]
 }
