@@ -15,7 +15,7 @@ const setupWrapper = () => {
         if (!$notionAi) return;
         const $wrapper = html`<div
           class="notion-enhancer--floating-buttons z-50 gap-[12px]
-          flex absolute bottom-[calc(26px+env(safe-area-inset-bottom))]"
+          flex absolute bottom-[calc(16px+env(safe-area-inset-bottom))]"
         ></div>`;
         removeMutationListener(addToDom);
         $notionAi.after($wrapper);
