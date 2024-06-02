@@ -1,0 +1,87 @@
+/**
+ * notion-enhancer: material ocean
+ * (c) 2020 Abubakar Yagoub <i@blacksuan19.me> (https://blacksuan19.tk)
+ * (c) 2024 dragonwocky <thedragonring.bod@gmail.com> (https://dragonwocky.me/)
+ * (https://notion-enhancer.github.io/) under the MIT license
+ */
+
+body.dark {
+  --ocean--main: #0f111a;
+  --ocean--sec: #00010a;
+  --ocean--tet: #000108;
+  --ocean--accent: #ff4151;
+  --ocean--light_gray: #e9e9e9;
+  --ocean--gray: #e0e0e0;
+  --ocean--brown: #d8b6a6;
+  --ocean--orange: #fde3c0;
+  --ocean--yellow: #ebcb8b;
+  --ocean--green: #a3be8c;
+  --ocean--blue: #81a1c1;
+  --ocean--purple: #b48ead;
+  --ocean--pink: #ffc0cb;
+  --ocean--red: #bf616a;
+
+  --theme--fg-secondary: var(--ocean--gray);
+  --theme--fg-border: rgba(255, 255, 255, 0.1);
+  --theme--fg-gray: var(--ocean--gray);
+  --theme--fg-brown: var(--ocean--brown);
+  --theme--fg-orange: var(--ocean--orange);
+  --theme--fg-yellow: var(--ocean--yellow);
+  --theme--fg-green: var(--ocean--green);
+  --theme--fg-blue: var(--ocean--blue);
+  --theme--fg-purple: var(--ocean--purple);
+  --theme--fg-pink: var(--ocean--pink);
+  --theme--fg-red: var(--ocean--red);
+
+  --theme--bg-primary: var(--ocean--main);
+  --theme--bg-secondary: var(--ocean--sec);
+  --theme--bg-hover: rgb(0, 1, 8, 0.3);
+  --theme--bg-light_gray: var(--ocean--light_gray);
+  --theme--bg-gray: var(--ocean--gray);
+  --theme--bg-brown: var(--ocean--brown);
+  --theme--bg-orange: var(--ocean--orange);
+  --theme--bg-yellow: var(--ocean--yellow);
+  --theme--bg-green: var(--ocean--green);
+  --theme--bg-blue: var(--ocean--blue);
+  --theme--bg-purple: var(--ocean--purple);
+  --theme--bg-pink: var(--ocean--pink);
+  --theme--bg-red: var(--ocean--red);
+
+  --theme--dim-light_gray: var(--ocean--light_gray);
+  --theme--dim-gray: #e0e0e089;
+  --theme--dim-brown: #d8b6a692;
+  --theme--dim-orange: #fde3c09f;
+  --theme--dim-yellow: #ffe6a6ad;
+  --theme--dim-green: #a3be8ca3;
+  --theme--dim-blue: #81a1c1a3;
+  --theme--dim-purple: #b48eada8;
+  --theme--dim-pink: #ffc0cbb1;
+  --theme--dim-red: #bf616a9e;
+
+  --theme--accent-primary: var(--ocean--accent);
+  --theme--accent-primary_hover: #fc3747;
+  --theme--accent-primary_transparent: rgba(255, 65, 81, 0.2);
+  --theme--accent-secondary: var(--ocean--accent);
+  --theme--accent-secondary_hover: #fc3747;
+
+  --theme--scrollbar-track: transparent;
+  --theme--scrollbar-thumb: var(--ocean--sec);
+  --theme--scrollbar-thumb_hover: var(--ocean--accent);
+
+  --theme--code-inline_fg: #b3f5c8;
+  --theme--code-inline_bg: var(--ocean--sec);
+  --theme--code-block_bg: var(--ocean--sec);
+  --theme--code-keyword: var(--ocean--pink);
+  --theme--code-builtin: var(--ocean--yellow);
+  --theme--code-class_name: var(--ocean--blue);
+  --theme--code-number: var(--ocean--purple);
+  --theme--code-property: var(--ocean--pink);
+  --theme--code-regex: var(--ocean--yellow);
+  --theme--code-url: var(--ocean--yellow);
+  --theme--code-punctuation: var(--ocean--gray);
+  --theme--code-comment: var(--ocean--gray);
+  --theme--code-tag: var(--ocean--pink);
+  --theme--code-attr_name: var(--ocean--yellow);
+  --theme--code-selector: var(--ocean--orange);
+  --theme--code-atrule: var(--ocean--orange);
+}

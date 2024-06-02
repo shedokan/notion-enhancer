@@ -10,5 +10,6 @@
   "extensions/right-to-left",
   "extensions/no-peeking",
   "extensions/focus",
-  "themes/classic-dark"
+  "themes/classic-dark",
+  "themes/material-ocean"
 ]
