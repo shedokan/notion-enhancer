@@ -9,7 +9,6 @@ import { Sidebar } from "./islands/Sidebar.mjs";
 import { Footer } from "./islands/Footer.mjs";
 import { Banner } from "./islands/Banner.mjs";
 import { Onboarding } from "./islands/Onboarding.mjs";
-import { Telemetry } from "./islands/Telemetry.mjs";
 import { View } from "./islands/View.mjs";
 import { List } from "./islands/List.mjs";
 import { Mod } from "./islands/Mod.mjs";
@@ -140,17 +139,16 @@ const renderMenu = async () => {
               <//>
               <${View} id="core">
                 <${Options} mod=${mods.find(({ _src }) => _src === "core")} />
-                <${Telemetry} />
                 <${Profiles} />
-              <//>
-              ${[...categories, ...mods]
+                <//>
+                ${[...categories, ...mods]
                 .filter(({ view }) => view)
                 .map(({ view }) => view)}
             </div>
           </div>
           <${Footer} categories=${categories} />
         </main>
-      `;
+        `;
     useState(["footerOpen"], ([footerOpen]) => {
       $main.style.height = footerOpen ? "100%" : "calc(100% + 65px)";
     });

@@ -4,6 +4,8 @@
  * (https://notion-enhancer.github.io/) under the MIT license
  */
 
+// telemetry endpoint not ready, disabled for current release
+
 import { collectTelemetryData } from "../../sendTelemetry.mjs";
 import { Option } from "./Options.mjs";
 

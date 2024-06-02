@@ -166,14 +166,13 @@ function Banner({ updateAvailable, isDevelopmentBuild }) {
           >Sponsor me
         <//>
       </div>
-      <!-- Disclaimer: these perks are only a draft, for anyone reading this.
-      This information may change at any time. -->
+      <!-- Disclaimer: draft of potential perks, to be confirmed before full release. -->
       <${Description} class="mt-[6px]">
-        Sponsors help make open-source development sustainable and receive
+        <!-- Sponsors help make open-source development sustainable and receive
         access to priority support channels, private developer previews, and
         role cosmetics on Discord. A one-time donation is equivalent to 1 month
         of sponsor perks. To learn more about perks, read the
-        <a href=${tsAndCs} class="ml-[3px]">Terms & Conditions</a>.
+        <a href=${tsAndCs} class="ml-[3px]">Terms & Conditions</a>. -->
       <//>
     </div>`;
   initDatabase()

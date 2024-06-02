@@ -31,9 +31,7 @@ function Onboarding() {
         process and/or store data on your device (including workspace content,
         device metadata, and notion-enhancer configuration) as described in its
         privacy policy. Unless otherwise stated, the notion-enhancer will never
-        transmit your information from your device. Collection of anonymous
-        telemetry data is enabled by default and can be disabled at any time
-        through the menu.
+        transmit personally identifiable information from your device.
         <br /><br />
         The notion-enhancer is free and open-source software distributed under
         the <a href="${tsAndCs}#license">MIT License</a> without warranty of any

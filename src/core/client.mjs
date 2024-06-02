@@ -4,8 +4,10 @@
  * (https://notion-enhancer.github.io/) under the MIT license
  */
 
+// telemetry endpoint not ready, disabled for current release
+
 import { checkForUpdate } from "./updateCheck.mjs";
-import { sendTelemetryPing } from "./sendTelemetry.mjs";
+// import { sendTelemetryPing } from "./sendTelemetry.mjs";
 import { Modal, Frame } from "./islands/Modal.mjs";
 import { MenuButton } from "./islands/MenuButton.mjs";
 import { Tooltip } from "./islands/Tooltip.mjs";
@@ -152,5 +154,5 @@ export default async (api, db) =>
     insertPanel(api, db),
     insertCustomStyles(api, db),
     loadThemeOverrides(api, db),
-    sendTelemetryPing(),
+    // sendTelemetryPing(),
   ]).then(() => api.sendMessage("notion-enhancer", "load-complete"));
