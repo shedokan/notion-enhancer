@@ -14,6 +14,7 @@ import { List } from "./islands/List.mjs";
 import { Mod } from "./islands/Mod.mjs";
 import { Options } from "./islands/Options.mjs";
 import { Profiles } from "./islands/Profiles.mjs";
+import { Description } from "./islands/Description.mjs";
 
 let _apiImport, //
   _renderStarted,
@@ -136,19 +137,86 @@ const renderMenu = async () => {
                   isDevelopmentBuild=${await isDevelopmentBuild()}
                 />
                 <${Onboarding} />
+                <div
+                  class="p-6 rounded-[4px] mt-[16px] text-[14px]
+                  border border-[color:var(--theme--fg-red)]
+                  bg-[color:var(--theme--dim-red)] typography"
+                >
+                  Hi there! Before you go any further, <b>please note that this update is
+                  not feature complete.</b> As part of an internal overhaul and the Chrome
+                  extension's upgrade to manifest v3, all themes and extensions must be
+                  ported manually across to the new version.
+                  <br />
+                  <br />
+                  The following extensions have not been updated yet but will be
+                  soon:
+                  <ul class="list-disc pl-6">
+                    <li>indentation lines</li>
+                    <li>view scale</li>
+                    <li>emoji sets</li>
+                    <li>simpler databases</li>
+                    <li>icon sets</li>
+                    <li>quick note</li>
+                  </ul>
+                  <br />
+                  The theming system is incomplete and only mostly recolours the
+                  app's interface. The following themes have not been updated
+                  yet but will be soon:
+                  <ul class="list-disc pl-6">
+                    <li>dark+</li>
+                    <li>light+</li>
+                    <li>nord</li>
+                    <li>dracula</li>
+                    <li>neutral</li>
+                    <li>cherry cola</li>
+                    <li>gruvbox dark</li>
+                    <li>gruvbox light</li>
+                    <li>pastel dark</li>
+                    <li>pinky boom</li>
+                    <li>playful purple</li>
+                  </ul>
+                  <br />
+                  In the meantime, the styling for these themes can be
+                  found <a href="https://github.com/notion-enhancer/repo"
+                  >here</a> and
+                  copy/pasted into your custom styles alongside the <a
+                    href="https://github.com/notion-enhancer/repo/blob/dev/theming/theme.css"
+                    >old theming system</a>, if you wish.
+                  <br />
+                  <br />
+                  The following extensions have been deprecated as their feature
+                  offerings are now available within Notion by default. Some
+                  features that belonged to these extensions have been merged
+                  into the notion-enhancer's core or into the tweaks extension:
+                  <ul class="list-disc pl-6">
+                    <li>integrated titlebar</li>
+                    <li>collapsible properties</li>
+                    <li>collapsible headers</li>
+                    <li>tray</li>
+                    <li>tabs</li>
+                    <li>weekly view</li>
+                    <li>truncated titles</li>
+                    <li>global block links</li>
+                  </ul>
+                  <br />
+                  A full changelog and updated documentation will be made
+                  available on the website as soon as possible. This release is
+                  being made available early in order to comply with Chrome's
+                  deprecation of manifest v2.
+                </div>
               <//>
               <${View} id="core">
                 <${Options} mod=${mods.find(({ _src }) => _src === "core")} />
                 <${Profiles} />
-                <//>
-                ${[...categories, ...mods]
+              <//>
+              ${[...categories, ...mods]
                 .filter(({ view }) => view)
                 .map(({ view }) => view)}
             </div>
           </div>
           <${Footer} categories=${categories} />
         </main>
-        `;
+      `;
     useState(["footerOpen"], ([footerOpen]) => {
       $main.style.height = footerOpen ? "100%" : "calc(100% + 65px)";
     });

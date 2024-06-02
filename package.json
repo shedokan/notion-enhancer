@@ -2,7 +2,7 @@
   "name": "notion-enhancer",
   "version": "0.11.1",
   "author": "dragonwocky <thedragonring.bod@gmail.com> (https://dragonwocky.me/)",
-  "description": "an enhancer/customiser for the all-in-one productivity workspace notion.so",
+  "description": "An enhancer/customiser for the all-in-one productivity workspace Notion",
   "homepage": "https://notion-enhancer.github.io",
   "repository": "github:notion-enhancer/desktop",
   "bugs": "https://github.com/notion-enhancer/desktop/issues",
