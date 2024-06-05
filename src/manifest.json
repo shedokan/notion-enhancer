@@ -3,7 +3,7 @@
   "name": "notion-enhancer",
   "version": "0.11.1",
   "author": "dragonwocky <thedragonring.bod@gmail.com> (https://dragonwocky.me/)",
-  "description": "An enhancer/customiser for the all-in-one productivity workspace Notion",
+  "description": "Customise the all-in-one productivity workspace Notion.",
   "homepage_url": "https://notion-enhancer.github.io",
   "content_scripts": [{ "matches": ["*://*.notion.so/*"], "js": ["/init.js"] }],
   "background": { "service_worker": "/worker.js" },

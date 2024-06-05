@@ -2,7 +2,7 @@
   "name": "notion-enhancer",
   "version": "0.11.1",
   "id": "0f0bf8b6-eae6-4273-b307-8fc43f2ee082",
-  "description": "an enhancer/customiser for the all-in-one productivity workspace notion.so",
+  "description": "Customise the all-in-one productivity workspace Notion.",
   "tags": ["core"],
   "authors": [
     {
@@ -73,7 +73,7 @@
       "key": "developerMode",
       "description": "Activates built-in debugging tools accessible through the application menu.",
       "platforms": ["linux", "win32", "darwin"],
-      "value": true
+      "value": false
     }
   ],
   "clientStyles": ["variables.css", "../vendor/@unocss-preflight-tailwind.css"],

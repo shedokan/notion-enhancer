@@ -36,6 +36,11 @@ const patches = {
         (content = replaceIfNotFound(
           { string: content, mode: "prepend" },
           ...args
+        )),
+      append = (...args) =>
+        (content = replaceIfNotFound(
+          { string: content, mode: "append" },
+          ...args
         ));
 
     // https://github.com/notion-enhancer/notion-enhancer/issues/160:
@@ -53,12 +58,17 @@ const patches = {
     // bypass webRequest filter to load enhancer menu
     replace(/(\w)\.top!==\w\?(\w)\(\{cancel:!0\}\)/, "$1.top!==$1?$2({})");
 
-    // https://github.com/notion-enhancer/desktop/issues/291
-    // bypass csp issues by intercepting the notion:// protocol
+    // serve enhancer sources over the notion:// protocol
     const protocolHandler = /try\{const \w=await \w\.assetCache\.handleRequest\(\w\);/,
       protocolInterceptor = `{const n="notion://www.notion.so/__notion-enhancer/";if(e.url.startsWith(n))return require("electron").net.fetch(\`file://\${require("path").join(__dirname,"..","..","node_modules","notion-enhancer",e.url.slice(n.length))}\`)}`;
     prepend(protocolHandler, protocolInterceptor);
-    
+
+    // disable csp entirely. risky? yes. necessary? also yes.
+    // potentially could extend default policy instead someday.
+    const headerHandler = /\.onHeadersReceived\(\(\((\w),\w\)=>{/,
+      cspDisabler = `{const responseHeaders=$1.responseHeaders;if(responseHeaders){delete responseHeaders["content-security-policy"];return t({responseHeaders})}}`
+    append(headerHandler, cspDisabler);
+
     // expose the app's config + cache + preferences to the global namespace
     // e.g. to enable development mode or check if keep in background is enabled
     prepend(/\w\.exports=JSON\.parse\('\{"env":"production"/, "globalThis.__notionConfig=");
