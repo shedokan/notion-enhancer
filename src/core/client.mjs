@@ -44,7 +44,6 @@ const shouldLoadThemeOverrides = async (api, db) => {
 
 const insertMenu = async (api, db) => {
   const notionSidebar = `.notion-sidebar-container .notion-sidebar > :nth-child(3) > div > :nth-child(2)`,
-    notionSidebarButtons = `${notionSidebar} > [role="button"]`,
     { html, addMutationListener, removeMutationListener } = api,
     { addKeyListener, platform, enhancerUrl, onMessage } = api,
     menuButtonIconStyle = await db.get("menuButtonIconStyle"),
@@ -88,13 +87,10 @@ const insertMenu = async (api, db) => {
       >notion-enhancer
     <//>`;
   const appendToDom = () => {
-    document.body.append($modal);
-    const btns = document.querySelectorAll(notionSidebarButtons);
-    for (const $btn of btns) {
-      if ($btn.textContent.includes("Settings")) $btn.after($button);
-    }
-    const appended = document.contains($modal) && document.contains($button);
-    if (appended) removeMutationListener(appendToDom);
+    if (!document.body.contains($modal)) document.body.append($modal);
+    else if (!document.body.contains($button)) {
+      document.querySelector(notionSidebar)?.append($button);
+    } else removeMutationListener(appendToDom);
   };
   html`<${Tooltip}>
     <b>Configure the notion-enhancer and its mods</b>
